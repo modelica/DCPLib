@@ -12,7 +12,7 @@ DCPLib is a C++ implementation of the Distributed Co-Simulation Protocol (DCP). 
 | DCPLib::Xml | Classes to read/write a slave description from/to xml (dcpx).           | DCPLib::Core, Xerces-c |
 | DCPLib::Zip | Classes to read/write slave description from/to zip           | DCPLib::Core, DCPLib::Xml, Xerces-c, LibZip|
 ## Wiki ##
-For hints how to use this library, take a look at the [wiki](https://github.com/ChKater/DCPLib/wiki) pages
+For hints how to use this library, take a look at the [wiki](https://github.com/modelica/DCPLib/wiki) pages
 ## Example ##
 See [example](example) for a implementation of a master and slave.
 
