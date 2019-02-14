@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dcpSlaveDescription
+  dcpMajorVersion="1" dcpMinorVersion="0" dcpSlaveName="dcpslave" uuid="b5279485-720d-4542-9f29-bee4d9a75ef9">
+    <OpMode>
+        <SoftRealTime/>
+    </OpMode>
+    <TimeRes>
+        <Resolution numerator="1" denominator="100" fixed="true" recommended="true"/>
+    </TimeRes>
+    <TransportProtocols>
+        <UDP_IPv4>
+            <Control host="127.0.0.1" port="8080"/>
+            <DAT_input_output host="127.0.0.1">
+                <AvailablePortRange from="2048" to="65535"/>
+            </DAT_input_output>
+            <DAT_parameter host="127.0.0.1">
+                <AvailablePortRange from="2048" to="65535"/>
+            </DAT_parameter>
+        </UDP_IPv4>
+    </TransportProtocols>
+    <CapabilityFlags canAcceptConfigPdus="true" canHandleReset="true" canHandleVariableSteps="true" canMonitorHeartbeat="false"
+         canProvideLogOnRequest="true" canProvideLogOnNotification="true"/>
+    <Variables>
+        <Variable name="y" valueReference="1">
+            <Output>
+                <Float64 start="10.0"/>
+            </Output>
+        </Variable>
+        <Variable name="a" valueReference="2">
+            <Input>
+                <Float64 start="0"/>
+            </Input>
+        </Variable>
+    </Variables>
+    <Log>
+        <Categories>
+            <Category id="1" name="DCP_SLAVE"/>
+        </Categories>
+        <Templates>
+            <Template id="1" category="1" level="3" msg="[Time = %float64]: sin(%uint64 + %float64) = %float64"/>
+        </Templates>
+    </Log>
+</dcpSlaveDescription>
