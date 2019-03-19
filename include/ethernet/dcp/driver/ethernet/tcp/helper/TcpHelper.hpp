@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universitï¿½t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -33,18 +33,30 @@ public:
     virtual void setLastSessionAccess(size_t lastSessionAccess) = 0;
 };
 
+class IClient {
+public:
+    virtual ~IClient() {}
+
+    virtual void connectionLost() = 0;
+
+};
+
 class Session : public Logable, public std::enable_shared_from_this<Session> {
 public:
     Session(asio::io_service &ios, DcpManager &manager, std::shared_ptr<SessionManager> _sessionManager, size_t cId)
             : dcpManager(manager), sessionManager(_sessionManager), id(cId) {
         this->socket = std::make_shared<asio::ip::tcp::socket>(ios);
+        this->client = nullptr;
     }
 
-    Session(std::shared_ptr<asio::ip::tcp::socket> socket, DcpManager &manager)
+    Session(std::shared_ptr<asio::ip::tcp::socket> socket, DcpManager &manager, std::shared_ptr<IClient> client)
             : dcpManager(manager), id(0) {
         this->socket = socket;
         this->sessionManager = nullptr;
+        this->client = client;
     }
+
+    ~Session(){}
 
     asio::ip::tcp::socket &getSocket() {
         return *socket;
@@ -67,6 +79,16 @@ public:
     }
 
     std::size_t completion_condition(const std::error_code &error, std::size_t bytes_transferred) {
+        if (error && !connectionLost){
+            if (sessionManager != nullptr) {
+                sessionManager->removeSession(id);
+            }
+            if(client != nullptr){
+                client->connectionLost();
+            }
+            connectionLost = true;
+            return 0;
+        }
         if (!error && bytes_transferred >= 4) {
             return (*((uint32_t *) data) + 4) - bytes_transferred;
         }
@@ -74,6 +96,9 @@ public:
     }
 
     void handleRead(std::shared_ptr<Session> s, const std::error_code &error, size_t bytes_transferred) {
+        if(connectionLost){
+            return;
+        }
         if (!error) {
             if (sessionManager != nullptr) {
                 sessionManager->setLastSessionAccess(id);
@@ -89,15 +114,6 @@ public:
 
 
         } else {
-            if (asio::error::connection_reset == error || asio::error::operation_aborted == error ||
-                asio::error::eof == error) {
-                //Session is closed => stop receiving
-                if (sessionManager != nullptr) {
-                    sessionManager->removeSession(id);
-                }
-                return;
-            }
-
             dcpManager.reportError(DcpError::PROTOCOL_ERROR_GENERIC);
 #if defined(DEBUG) || defined(LOGGING)
             Log(NETWORK_PROBLEM, Tcp::protocolName, error.message());
@@ -148,6 +164,8 @@ private:
     uint8_t data[maxLength];
     DcpManager &dcpManager;
     std::shared_ptr<SessionManager> sessionManager;
+    std::shared_ptr<IClient> client;
+    bool connectionLost = false;
 };
 
 class Server : public Logable, public SessionManager, public std::enable_shared_from_this<Server> {
@@ -159,10 +177,6 @@ public:
 
     ~Server() {
         acceptor.cancel();
-        for (auto &it: sessions) {
-            it.second->getSocket().cancel();
-            it.second->getSocket().close();
-        }
 #if defined(DEBUG)
         Log(SOCKET_CLOSED, Tcp::protocolName, to_string(endpoint));
 #endif
@@ -206,6 +220,9 @@ public:
     }
 
     virtual void removeSession(size_t key) {
+        if(sessions[key] != nullptr){
+            sessions[key]->getSocket().close();
+        }
         sessions.erase(key);
     }
 
@@ -235,7 +252,9 @@ public:
 #if defined(DEBUG)
                 Log(TCP_CONNECTION_CLOSED, to_string(it->second->getSocket().remote_endpoint()));
 #endif
-                it->second->getSocket().close();
+                if(it->second != nullptr){
+                    it->second->getSocket().close();
+                }
                 sessions.erase(it++);
             } else {
                 ++it;
@@ -248,7 +267,9 @@ public:
 #if defined(DEBUG)
             Log(TCP_CONNECTION_CLOSED, to_string(it->second->getSocket().remote_endpoint()));
 #endif
-            it->second->getSocket().close();
+            if(it->second != nullptr){
+                it->second->getSocket().close();
+            }
             sessions.erase(it++);
         }
     }
@@ -265,34 +286,29 @@ private:
 };
 
 
-class Client : public Logable {
+class Client : public IClient, public Logable, public std::enable_shared_from_this<Client>{
 public:
-    Client(asio::io_service &ios, asio::ip::tcp::endpoint _endpoint, DcpManager &manager, LogManager &logManager) : dcpManager(
+    Client(asio::io_service &_ios, asio::ip::tcp::endpoint _endpoint, DcpManager &manager, LogManager &logManager) : dcpManager(
             manager),
-                                                                                                          endpoint(
-                                                                                                                  _endpoint),
-                                                                                                          connected(
-                                                                                                                  false) {
-        socket = std::make_shared<asio::ip::tcp::socket>(ios);
+                                                                                                                     endpoint(
+                                                                                                                             _endpoint),
+                                                                                                                     connected(
+                                                                                                                             false),
+                                                                                                                     ios(_ios) {
         setLogManager(logManager);
     }
 
-    ~Client() {
-#if defined(DEBUG)
-        Log(TCP_CONNECTION_CLOSED, to_string(socket->remote_endpoint()));
-#endif
-        socket->cancel();
-        socket->close();
-    }
+    ~Client() {}
 
     bool start() {
         if (!connected) {
             try {
+                socket = std::make_shared<asio::ip::tcp::socket>(ios);
                 socket->connect(endpoint);
 #if defined(DEBUG)
                 Log(NEW_TCP_CONNECTION_OUT, to_string(endpoint));
 #endif
-                session = std::make_shared<Session>(socket, dcpManager);
+                session = std::make_shared<Session>(socket, dcpManager, shared_from_this());
                 session->setLogManager(logManager);
                 session->start();
                 connected = true;
@@ -321,11 +337,17 @@ public:
         return connected;
     }
 
+    void connectionLost() {
+        socket->close();
+        connected = false;
+    }
+
 
 private:
     std::shared_ptr<asio::ip::tcp::socket> socket;
     asio::ip::tcp::endpoint endpoint;
     DcpManager &dcpManager;
+    asio::io_service & ios;
 
     bool connected;
     std::shared_ptr<Session> session;
