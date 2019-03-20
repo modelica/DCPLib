@@ -177,6 +177,7 @@ public:
 
     ~Server() {
         acceptor.cancel();
+        clearSessions();
 #if defined(DEBUG)
         Log(SOCKET_CLOSED, Tcp::protocolName, to_string(endpoint));
 #endif
@@ -274,6 +275,11 @@ public:
         }
     }
 
+    void cancel(){
+        clearSessions();
+        acceptor.cancel();
+    }
+
 private:
     asio::io_service &ios;
     asio::ip::tcp::endpoint endpoint;
@@ -341,7 +347,6 @@ public:
         socket->close();
         connected = false;
     }
-
 
 private:
     std::shared_ptr<asio::ip::tcp::socket> socket;

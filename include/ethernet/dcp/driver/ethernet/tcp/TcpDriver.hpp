@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universitï¿½t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -105,7 +105,8 @@ private:
     inline std::shared_ptr<Server>
     getServer(asio::io_service &ios, port_t port, ip_address_t ip, DcpManager &manager, LogManager &_logManager) {
         asio::ip::tcp::endpoint endpoint(asio::ip::address_v4(ip), port);
-        if (mainServer->getEndpoint() == endpoint) {
+        if (mainServer->getEndpoint() == endpoint ||
+            (mainServer->getEndpoint().address().to_string() == "0.0.0.0" && mainServer->getEndpoint().port() == port)) {
             return mainServer;
         }
         for (const auto &it : ioServers) {
@@ -272,6 +273,12 @@ private:
     }
 
     void closeConfiguredPorts() {
+        for (auto &pos: ioServers) {
+            pos.second->cancel();
+        }
+        for (auto &pos: parameterServers) {
+            pos.second->cancel();
+        }
         ioClients.clear();
         parameterClients.clear();
         ioServers.clear();

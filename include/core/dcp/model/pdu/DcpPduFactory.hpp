@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universitï¿½t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -99,6 +99,7 @@ static DcpPdu *makeDcpPdu(unsigned char *stream, size_t stream_size) {
         case DcpPduType::CFG_target_network_information: {
             DcpTransportProtocol &tp = *((DcpTransportProtocol * )(stream + 10));
             switch (tp) {
+                case DcpTransportProtocol::TCP_IPv4:
                 case DcpTransportProtocol::UDP_IPv4:
                     return new DcpPduCfgNetworkInformationIPv4(stream, stream_size);
                 default:
@@ -109,6 +110,7 @@ static DcpPdu *makeDcpPdu(unsigned char *stream, size_t stream_size) {
         case DcpPduType::CFG_source_network_information: {
             DcpTransportProtocol &tp = *((DcpTransportProtocol * )(stream + 10));
             switch (tp) {
+                case DcpTransportProtocol::TCP_IPv4:
                 case DcpTransportProtocol::UDP_IPv4:
                     return new DcpPduCfgNetworkInformationIPv4(stream, stream_size);
                 default:
@@ -119,6 +121,7 @@ static DcpPdu *makeDcpPdu(unsigned char *stream, size_t stream_size) {
         case DcpPduType::CFG_param_network_information: {
             DcpTransportProtocol &tp = *((DcpTransportProtocol * )(stream + 10));
             switch (tp) {
+                case DcpTransportProtocol::TCP_IPv4:
                 case DcpTransportProtocol::UDP_IPv4:
                     return new DcpPduCfgParamNetworkInformationIPv4(stream, stream_size);
                 default:
