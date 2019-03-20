@@ -12,7 +12,7 @@
 
 #include <dcp/model/pdu/DcpPdu.hpp>
 #include <dcp/model/constant/DcpError.hpp>
-
+#include <functional>
 struct DcpManager{
     std::function<void(DcpPdu&)> receive;
     std::function<void(const DcpError)> reportError;
