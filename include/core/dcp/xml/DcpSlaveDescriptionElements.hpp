@@ -166,7 +166,7 @@ struct AvailablePortRange_t {
     port_t to;
 };
 
-static AvailablePortRange_t make_AviablePortRange(port_t from, port_t to) {
+static AvailablePortRange_t make_AvailablePortRange(port_t from, port_t to) {
     return {from, to};
 }
 

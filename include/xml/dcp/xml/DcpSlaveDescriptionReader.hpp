@@ -575,7 +575,7 @@ std::shared_ptr<SlaveDescription_t> readSlaveDescription(const char *acuDFile) {
                             if (portNodeName == "AvailablePortRange") {
                                 PARSE_ATTR_INT(port, from, uint16_t)
                                 PARSE_ATTR_INT(port, to, uint16_t)
-                                DAT->availablePortRanges.push_back(make_AviablePortRange(*from, *to));
+                                DAT->availablePortRanges.push_back(make_AvailablePortRange(*from, *to));
                             } else if (portNodeName == "AvailablePort") {
                                 PARSE_ATTR_INT(port, port, uint16_t)
                                 DAT->availablePorts.push_back(make_AvailablePort(*port));
