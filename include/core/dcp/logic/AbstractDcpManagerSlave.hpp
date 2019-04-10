@@ -1212,7 +1212,7 @@ protected:
                 switch (dataType) {
                     case DcpDataType::int8: {
                         if (var.Parameter.get()->Int8.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Int8.get()->start;
+                            auto &startValues = *var.Parameter.get()->Int8.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -1221,7 +1221,7 @@ protected:
                     }
                     case DcpDataType::int16: {
                         if (var.Parameter.get()->Int16.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Int16.get()->start;
+                            auto &startValues = *var.Parameter.get()->Int16.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -1230,7 +1230,7 @@ protected:
                     }
                     case DcpDataType::int32: {
                         if (var.Parameter.get()->Int32.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Int32.get()->start;
+                            auto &startValues = *var.Parameter.get()->Int32.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -1239,7 +1239,7 @@ protected:
                     }
                     case DcpDataType::int64: {
                         if (var.Parameter.get()->Int64.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Int64.get()->start;
+                            auto &startValues = *var.Parameter.get()->Int64.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -1248,7 +1248,7 @@ protected:
                     }
                     case DcpDataType::uint8: {
                         if (var.Parameter.get()->Uint8.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Uint8.get()->start;
+                            auto &startValues = *var.Parameter.get()->Uint8.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -1257,7 +1257,7 @@ protected:
                     }
                     case DcpDataType::uint16: {
                         if (var.Parameter.get()->Uint16.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Uint16.get()->start;
+                            auto &startValues = *var.Parameter.get()->Uint16.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -1266,7 +1266,7 @@ protected:
                     }
                     case DcpDataType::uint32: {
                         if (var.Parameter.get()->Uint32.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Uint32.get()->start;
+                            auto &startValues = *var.Parameter.get()->Uint32.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -1275,7 +1275,7 @@ protected:
                     }
                     case DcpDataType::uint64: {
                         if (var.Parameter.get()->Uint64.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Uint64.get()->start;
+                            auto &startValues = *var.Parameter.get()->Uint64.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -1284,7 +1284,7 @@ protected:
                     }
                     case DcpDataType::float32: {
                         if (var.Parameter.get()->Float32.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Float32.get()->start;
+                            auto &startValues = *var.Parameter.get()->Float32.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -1293,7 +1293,7 @@ protected:
                     }
                     case DcpDataType::float64: {
                         if (var.Parameter.get()->Float64.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Float64.get()->start;
+                            auto &startValues = *var.Parameter.get()->Float64.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
