@@ -54,6 +54,7 @@ public:
                 [this]() {/*nothing to do for connectionless UDP_IPv4*/ },
                 std::bind(&UdpDriver::closeConfiguredPorts, this),
                 [this]() {/*nothing to do for connectionless UDP_IPv4*/ },
+                std::bind(&UdpDriver::stopReceiving, this)
         };
     }
 
@@ -127,7 +128,6 @@ private:
             }
         }
         mainSocket->send(msg, endpoint);
-
     }
 
     void setSlaveNetworkInformation(dcpId_t dcpId, port_t port, ip_address_t ip) {
@@ -163,6 +163,9 @@ private:
         io_service.run();
     }
 
+    void stopReceiving() {
+        io_service.stop();
+    }
 
     void registerSuccessfull() {
         masterEndpoint = mainSocket->getLastAccess();
@@ -181,7 +184,6 @@ private:
         }
     }
 
-
     void closeConfiguredPorts() {
         for (auto &pos: ioIn) {
             pos.second->close();
@@ -192,8 +194,6 @@ private:
         }
         paramIn.clear();
     }
-
-
 };
 
 #endif //DCPLIB_UDPDRIVER_H
