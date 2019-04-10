@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cstdint>
 #include <fstream>
+#include <memory>
 
 #include <dcp/model/pdu/DcpPduFactory.hpp>
 #include <dcp/xml/DcpSlaveDescriptionReader.hpp>
