@@ -218,7 +218,7 @@ public:
     template<FunctionType ftype>
     void setSynchronizeCallback(std::function<void()> synchronizeCallback) {
         this->synchronizeCallback = std::move(synchronizeCallback);
-        asynchronousCallback[DcpCallbackTypes::SYNCHRONIZE] = ftype == ASYNC;
+        asynchronousCallback[DcpCallbackTypes::synchronize] = ftype == ASYNC;
     }
 
     /**
@@ -310,7 +310,7 @@ public:
     * @pre A ASYNC callback for setSynchronizeCallback was called
     */
     bool synchronizeFinished() {
-        if (!asynchronousCallback[DcpCallbackTypes::SYNCHRONIZE]) {
+        if (!asynchronousCallback[DcpCallbackTypes::synchronize]) {
             return false;
         }
         synchronizingFinished();
@@ -625,7 +625,7 @@ protected:
         Log(SYNCHRONIZING_STARTED);
 #endif
 
-        if (asynchronousCallback[DcpCallbackTypes::SYNCHRONIZE]) {
+        if (asynchronousCallback[DcpCallbackTypes::synchronize]) {
             std::thread t(synchronizeCallback);
             t.detach();
         } else {
