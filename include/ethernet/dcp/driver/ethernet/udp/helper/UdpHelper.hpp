@@ -52,7 +52,6 @@ public:
                 dcpManager.reportError(DcpError::PROTOCOL_ERROR_GENERIC);
             }
         } catch (std::exception &e) {
-            std::cerr << e.what() << std::endl;
             dcpManager.reportError(DcpError::PROTOCOL_ERROR_GENERIC);
 #if defined(DEBUG) || defined(LOGGING)
             Log(NETWORK_PROBLEM, Udp::protocolName, e.what());
@@ -85,7 +84,6 @@ public:
         setup_receive();
     }
 
-
     void setup_receive() {
         socket->async_receive_from(asio::buffer(data + 4, maxLength), lastAccess,
                                    std::bind(&Socket::handle_receive, this,
@@ -106,7 +104,6 @@ public:
 #endif
             started = true;
         }
-
     }
 
     void close() {
@@ -134,7 +131,6 @@ private:
     };
     uint8_t data[maxLength];
     bool started;
-
 };
 
 #endif //DCPLIB_UDPHELPER_H
