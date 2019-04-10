@@ -30,7 +30,7 @@
 
 #include <cxxabi.h>
 
-std::string demangle(const char* mangled_name) {
+inline std::string demangle(const char* mangled_name) {
 	std::size_t len = 0;
 	int status = 0;
 	std::unique_ptr< char, decltype(&std::free) > ptr(
@@ -40,7 +40,7 @@ std::string demangle(const char* mangled_name) {
 
 #else
 
-std::string demangle(const char* name) { return name; }
+inline std::string demangle(const char* name) { return name; }
 
 #endif // _GNUG_
 
