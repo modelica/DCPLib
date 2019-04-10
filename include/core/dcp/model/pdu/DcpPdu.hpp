@@ -23,6 +23,7 @@
 //Include files
 
 #include "dcp/helper/Helper.hpp"
+#include "dcp/model/constant/DcpPduType.hpp"
 
 #include <cstdint>
 #include <cstring>
