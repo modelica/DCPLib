@@ -238,9 +238,9 @@ public:
             case DcpPduType::DAT_input_output: {
                 DcpPduDatInputOutput &data = static_cast<DcpPduDatInputOutput &>(msg);
                 if (synchronousCallback[DcpCallbackTypes::NACK]) {
-                    dataReceivedListener(data.getDataId(), data.getSerializedSize(), data.getPayload());
+                    dataReceivedListener(data.getDataId(), data.getPduSize() - data.getCorrectSize(), data.getPayload());
                 } else {
-                    std::thread t(dataReceivedListener, data.getDataId(), data.getSerializedSize(), data.getPayload());
+                    std::thread t(dataReceivedListener, data.getDataId(), data.getPduSize() - data.getCorrectSize(), data.getPayload());
                     t.detach();
                 }
                 break;
