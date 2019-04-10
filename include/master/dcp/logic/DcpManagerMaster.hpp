@@ -956,9 +956,9 @@ private:
         std::unique_lock<std::mutex> lk(heartbeatMutex[dcpId]);
 
         while (runningHeartbeats[dcpId]) {
-            time_point<system_clock, microseconds> now = time_point_cast<microseconds>(system_clock::now());
+            time_point<system_clock> now = time_point_cast<microseconds>(system_clock::now());
             INF_state(dcpId);
-            time_point<system_clock, microseconds> nextCheck = now + microseconds(between);
+            time_point<system_clock> nextCheck = now + microseconds(between);
             heartbeatCV[dcpId].wait_until(lk, nextCheck);
         }
 #ifdef DEBUG
