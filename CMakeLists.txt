@@ -171,7 +171,6 @@ if(BUILD_ALL OR BUILD_ZIP)
     add_library(DCPLib::Zip ALIAS Zip)
 
     target_link_libraries(Zip INTERFACE DCPLib::Xml ZIP::ZIP)
-    target_link_libraries(Zip INTERFACE zip)
 
     target_include_directories(Zip INTERFACE
             $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/zip>

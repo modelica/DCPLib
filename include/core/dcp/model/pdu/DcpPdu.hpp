@@ -18,13 +18,12 @@
 #define SIZE_HANDLING(size) virtual bool isSizeCorrect(){return this->stream_size - PDU_LENGTH_INDICATOR_SIZE == size;} \
     virtual size_t getCorrectSize(){return size;}
 
-
 #define CHECK_TYPE_ID
 
 //Include files
 
 #include "dcp/helper/Helper.hpp"
-
+#include "dcp/model/constant/DcpPduType.hpp"
 
 #include <cstdint>
 #include <cstring>
@@ -54,7 +53,6 @@ public:
         this->deleteStream = false;
     }
 
-
     /**
      * Get the type id.
      * @return the type id.
@@ -63,7 +61,7 @@ public:
 
     ~DcpPdu() {
         if (deleteStream) {
-            delete stream;
+            delete[] stream;
         }
     }
 
@@ -141,9 +139,6 @@ public:
         *((uint32_t*) this->stream) = pduSize;
     }
 
-
-
-
 protected:
     /**
      * byte array containg pdu data
@@ -171,9 +166,6 @@ protected:
         setPduSize(pduSize);
         this->deleteStream = true;
     }
-
-
-
 };
 
 #endif //DCPLIB_DCPPDU_HPP

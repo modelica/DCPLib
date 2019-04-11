@@ -15,8 +15,6 @@
 #include <dcp/model/LogEntry.hpp>
 #include <dcp/logic/LogManager.hpp>
 
-
-
 class Logable {
 public:
     void setLogManager(const LogManager &logManager) {
@@ -34,13 +32,12 @@ public:
         using namespace std::chrono;
 
         DcpLogHelper::checkDataTypes(logTemplate, 0, args...);
-        size_t size = DcpLogHelper::size(args...);
+        size_t size = DcpLogHelper::size(&args...);
         const auto logTime = time_point_cast<microseconds>(system_clock::now());
 
         uint8_t* payload = logManager.alloc(size + 9);
         *((int64_t *) payload) = (int64_t) duration_cast<seconds>(logTime.time_since_epoch()).count();
         *((uint8_t *) payload + 8) = logTemplate.id;
-
 
         DcpLogHelper::applyFields(payload + 9, args...);
         logManager.consume(logTemplate, payload, size + 9);

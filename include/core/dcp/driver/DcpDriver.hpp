@@ -14,7 +14,6 @@
 #include <dcp/model/pdu/DcpPdu.hpp>
 #include <dcp/logic/DcpManager.hpp>
 
-
 /**
  * Interface for a DCP driver.
  * A DCP driver maps the PDUs to transport protocol and
@@ -106,6 +105,10 @@ struct DcpDriver{
      * Disconnect all connections
      */
     std::function<void()> disconnect;
+    /**
+    * The DCP driver should stop listening to the transport protocol
+    */
+    std::function<void()> stopReceiving;
 };
 
 #endif //DCPLIB_DCPDRIVER_H

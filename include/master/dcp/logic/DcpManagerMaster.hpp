@@ -51,7 +51,6 @@
 #include <thread>
 #include <iostream>
 
-
 /**
  * DCP management of a master.
  *
@@ -107,7 +106,6 @@ public:
 
         switch (msg.getTypeId()) {
             case DcpPduType::RSP_ack: {
-
                 DcpPduRspAck &ack = static_cast<DcpPduRspAck &>(msg);
                 if(lastRegisterSeq[ack.getSender()] == ack.getRespSeqId()){
                     lastRegisterSuccessfullSeq[ack.getSender()] = ack.getRespSeqId();
@@ -168,14 +166,12 @@ public:
             case DcpPduType::RSP_log_ack: {
                 DcpPduRspLogAck &logAck = static_cast<DcpPduRspLogAck &>(msg);
                 if (logTemplates.count(logAck.getSender()) > 0) {
-
                     std::vector<std::shared_ptr<LogEntry>> entries;
                     size_t offset = 0;
                     while (offset < logAck.getSerializedSize() - 4) {
                         uint8_t *curLog = logAck.getPayload() + offset;
                         uint8_t templateId = *((uint8_t *) curLog + 8);
                         if (logTemplates[logAck.getSender()].count(templateId) > 0) {
-
                             LogTemplate &logTemplate = logTemplates[logAck.getSender()].find(templateId)->second;
                             LogEntry *logEntry = new LogEntry(logTemplate, curLog, 0);
                             logEntry->applyPayloadToString();
@@ -185,7 +181,6 @@ public:
 
                             entries.push_back(std::shared_ptr<LogEntry>(logEntry));
                             offset += logEntry->serializedSize();
-
                         } else {
                             break;
                             //toDo log unknown id
@@ -219,7 +214,6 @@ public:
                     logTemplates[log.getSender()].count(log.getTemplateId()) > 0) {
                     uint8_t templateId = *((uint8_t *) log.getPayload() + 10);
                     if (logTemplates[log.getSender()].count(templateId) > 0) {
-
                         size_t size = log.getSerializedSize() - 2;
                         uint8_t *payload = new uint8_t[size];
                         memcpy(payload, log.getLogEntryPayload(), size);
@@ -244,9 +238,9 @@ public:
             case DcpPduType::DAT_input_output: {
                 DcpPduDatInputOutput &data = static_cast<DcpPduDatInputOutput &>(msg);
                 if (synchronousCallback[DcpCallbackTypes::NACK]) {
-                    dataReceivedListener(data.getDataId(), data.getSerializedSize(), data.getPayload());
+                    dataReceivedListener(data.getDataId(), data.getPduSize() - data.getCorrectSize(), data.getPayload());
                 } else {
-                    std::thread t(dataReceivedListener, data.getDataId(), data.getSerializedSize(), data.getPayload());
+                    std::thread t(dataReceivedListener, data.getDataId(), data.getPduSize() - data.getCorrectSize(), data.getPayload());
                     t.detach();
                 }
                 break;
@@ -437,7 +431,6 @@ public:
         driver.send(pdu);
     }
 
-
     /**
     * Send a CFG_time_res PDU
     * @param dcpId Receiver of the PDU
@@ -453,7 +446,6 @@ public:
         driver.send(pdu);
     }
 
-
     /**
      * Send a CFG_steps
      * @param dcpId Receiver of the PDU
@@ -466,7 +458,6 @@ public:
         DcpPduCfgSteps pdu = {getNextSeqNum(dcpId), dcpId, steps, dataId};
         driver.send(pdu);
     }
-
 
     /**
      * Send a CFG_input
@@ -670,7 +661,6 @@ public:
         driver.send(setLogging);
     }
 
-
     /**
      * Send a CFG_scope PDU
      * @param dcpId Receiver of the PDU
@@ -765,7 +755,6 @@ public:
                                                           LogTemplate(templateObj.id, templateObj.category,
                                                                       (DcpLogLevel) templateObj.level, templateObj.msg,
                                                                       cDataTypes)));
-
             }
         }
     }
@@ -790,7 +779,6 @@ public:
     void setNAckReceivedListener(const std::function<void(uint8_t, uint16_t, DcpError)> nAckReceivedListener) {
         this->nAckReceivedListener = std::move(nAckReceivedListener);
         synchronousCallback[DcpCallbackTypes::NACK] = ftype == SYNC;
-
     }
 
     /**
@@ -802,7 +790,6 @@ public:
     void setStateAckReceivedListener(const std::function<void(uint8_t, uint16_t, DcpState)> stateAckReceivedListener) {
         this->stateAckReceivedListener = std::move(stateAckReceivedListener);
         synchronousCallback[DcpCallbackTypes::STATE_ACK] = ftype == SYNC;
-
     }
 
     /**
@@ -826,6 +813,12 @@ public:
             const std::function<void(uint8_t, DcpState)> stateChangedNotificationReceivedListener) {
         this->stateChangedNotificationReceivedListener = std::move(stateChangedNotificationReceivedListener);
         synchronousCallback[DcpCallbackTypes::STATE_CHANGED] = ftype == SYNC;
+    }
+
+    template<FunctionType ftype>
+    void setErrorListener(const std::function<void(DcpError errorCode)> errorListener) {
+        this->errorListener = std::move(errorListener);
+        synchronousCallback[DcpCallbackTypes::ERROR_LI] = ftype == SYNC;
     }
 
     /**
@@ -894,7 +887,6 @@ public:
                 [this](const DcpError errorCode) { reportError(errorCode); }};
     }
 
-
 private:
     std::map<uint8_t, bool> runningHeartbeats;
     std::map<uint8_t, std::unique_ptr<std::thread>> heartbeatThreads;
@@ -946,7 +938,6 @@ private:
                                                               "Stop sending heartbeat to slave id %uint8.",
                                                               {DcpDataType::uint8});
 
-
     void heartBeatRoutine(const uint8_t dcpId, const uint32_t numerator, const uint32_t denominator) {
         using namespace std::chrono;
 #ifdef DEBUG
@@ -956,16 +947,15 @@ private:
         std::unique_lock<std::mutex> lk(heartbeatMutex[dcpId]);
 
         while (runningHeartbeats[dcpId]) {
-            time_point<system_clock, microseconds> now = time_point_cast<microseconds>(system_clock::now());
+            time_point<system_clock> now = time_point_cast<microseconds>(system_clock::now());
             INF_state(dcpId);
-            time_point<system_clock, microseconds> nextCheck = now + microseconds(between);
+            time_point<system_clock> nextCheck = now + microseconds(between);
             heartbeatCV[dcpId].wait_until(lk, nextCheck);
         }
 #ifdef DEBUG
         Log(SENDING_HEARTBEAT_STOPPED, dcpId);
 #endif
     }
-
 };
 
 #endif /* ACI_LOGIC_DRIVERMANAGERMASTER_H_ */

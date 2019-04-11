@@ -8,9 +8,7 @@
  */
 
 #include <string>
-#if defined(DEBUG) || defined(LOGGING)
 #include <sstream>
-#endif
 
 #ifndef DCPLIB_DCPSTATE_HPP
 #define DCPLIB_DCPSTATE_HPP
@@ -128,9 +126,7 @@ enum class DcpState : uint8_t {
      * The DCP slave has finished its error handling procedure and successfully mitigated the hazardous condition.
      */
     ERROR_RESOLVED = 0x12,
-
 };
-#if defined(DEBUG) || defined(LOGGING)
 
 /**
  * Adds an DcpState to an osstream in a human readable format.
@@ -192,5 +188,4 @@ static std::string to_string(DcpState type) {
     oss << type;
     return oss.str();
 }
-#endif
 #endif //DCPLIB_DCPSTATE_HPP
