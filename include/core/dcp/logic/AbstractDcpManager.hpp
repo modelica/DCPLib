@@ -20,7 +20,6 @@
 #include <dcp/helper/LogHelper.hpp>
 #endif
 
-
 /**
  * General interface for the AciLogic.
  *
@@ -42,12 +41,15 @@ public:
     }
 
     void start() {
-
         driver.setDcpManager(getDcpManager());
 #if defined(DEBUG) || defined(LOGGING)
         driver.setLogManager(logManager);
 #endif
         driver.startReceiving();
+    }
+
+    void stop() {
+        driver.stopReceiving();
     }
 
     virtual void receive(DcpPdu &msg) = 0;
@@ -97,13 +99,11 @@ protected:
      */
     std::map<uint16_t, uint16_t> parameterSegNumsIn;
 
-
     std::vector<std::function<void(const LogEntry &)>> logListeners;
     bool generateLogString;
 
     uint8_t dcpId;
     uint8_t masterId;
-
 
 protected:
     AbstractDcpManager() {
@@ -138,7 +138,6 @@ protected:
         return seqId - old;
     }
 
-
     uint16_t checkSeqIdInOut(const uint16_t dataId, const uint16_t seqId) {
         uint16_t old = dataSegNumsIn[dataId];
         if (seqId > old) {
@@ -162,7 +161,6 @@ protected:
         return nextSeq;
     }
 
-
     virtual void consume(const LogTemplate &logTemplate, uint8_t *payload, size_t size) {
         LogEntry logEntry(logTemplate, payload, size);
         if (generateLogString) {
@@ -172,7 +170,6 @@ protected:
             logListener(logEntry);
         }
         delete[] payload;
-
     }
 
     virtual uint8_t *alloc(size_t size) {

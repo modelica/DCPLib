@@ -11,9 +11,7 @@
 #define DCPLIB_DCPLOGLEVEL_HPP
 
 #include <string>
-#if defined(DEBUG) || defined(LOGGING)
 #include <sstream>
-#endif
 
 enum class DcpLogLevel : uint8_t {
     /**
@@ -38,7 +36,6 @@ enum class DcpLogLevel : uint8_t {
     LVL_DEBUG = 4,
 };
 
-#if defined(DEBUG) || defined(LOGGING)
 static std::ostream &operator<<(std::ostream &os, DcpLogLevel level) {
     switch (level) {
         case DcpLogLevel::LVL_FATAL:
@@ -62,5 +59,4 @@ static std::string to_string(DcpLogLevel level) {
     oss << level;
     return oss.str();
 }
-#endif
 #endif //DCPLIB_DCPLOGLEVEL_HPP

@@ -11,9 +11,7 @@
 #define DCPLIB_DCPDATATYPE_HPP
 
 #include <string>
-#if defined(DEBUG) || defined(LOGGING)
 #include <sstream>
-#endif
 
 /**
  * Data types a DCP slaves variable
@@ -70,7 +68,6 @@ enum class DcpDataType : uint8_t {
      * its bits.     */
     binary = 11,
 
-
     /******************************
      * Internal for logs
      ******************************/
@@ -85,7 +82,6 @@ enum class DcpDataType : uint8_t {
     pduType = 20,
 };
 
-#if defined(DEBUG) || defined(LOGGING)
 /**
  * Adds an DcpDataType to an osstream in a human readable format.
  * @param str
@@ -136,7 +132,6 @@ static std::ostream &operator<<(std::ostream &os, DcpDataType type) {
             return os << "uint8";
         default:
             return os << "UNKNOWN(" << (unsigned((uint8_t) type)) << ")";
-
     }
     return os;
 }
@@ -152,5 +147,4 @@ static std::string to_string(DcpDataType type) {
     return oss.str();
 }
 
-#endif
 #endif //DCPLIB_DCPDATATYPE_HPP

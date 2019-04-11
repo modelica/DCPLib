@@ -26,13 +26,11 @@
 #include <dcp/model/constant/DcpTransportProtocol.hpp>
 #include <dcp/model/LogTemplate.hpp>
 
-
 #ifdef __GNUG__ // gnu C++ compiler
 
 #include <cxxabi.h>
 
-std::string demangle(const char* mangled_name) {
-
+inline std::string demangle(const char* mangled_name) {
 	std::size_t len = 0;
 	int status = 0;
 	std::unique_ptr< char, decltype(&std::free) > ptr(
@@ -42,7 +40,7 @@ std::string demangle(const char* mangled_name) {
 
 #else
 
-std::string demangle(const char* name) { return name; }
+inline std::string demangle(const char* name) { return name; }
 
 #endif // _GNUG_
 
@@ -50,7 +48,7 @@ template<typename T>
 std::string type_name()
 {
     std::string tname = typeid(T).name();
-  
+
     return demangle(tname.c_str());
 }
 
@@ -102,8 +100,6 @@ static DcpDataType getFixedSizeDcpDataType() {
 }
 
 namespace DcpLogHelper {
-
-
     template<typename T>
     inline size_t calcsize(const T val) {
         return sizeof(T);
@@ -119,17 +115,14 @@ namespace DcpLogHelper {
         return calcsize(std::string(val));
     };
 
-
     inline size_t size() {
         return 0;
     };
 
     template<typename T, typename ... Args>
-    inline size_t size(const T val, const Args... args) {
-        return calcsize<T>(val) + size(args...);
+    inline size_t size(const T *val, const Args... args) {
+        return calcsize<T>(*val) + size(args...);
     };
-
-
 
     template<typename T>
     inline size_t applyField(uint8_t *payload, const T val) {
@@ -196,7 +189,6 @@ namespace DcpLogHelper {
         } catch(std::exception e){
             throw std::invalid_argument("Error for template_id " + std::to_string(logTemplate.id));
         }
-
     }
 
     template<>
@@ -214,10 +206,6 @@ namespace DcpLogHelper {
         _checkDataTypes<T>(logTemplate, index, val);
         checkDataTypes(logTemplate, index + 1, args...);
     }
-
-
-
-
 }
 static std::string to_string(std::chrono::system_clock::time_point tp){
     // convert to std::time_t in order to convert to std::tm (broken time)
@@ -235,13 +223,10 @@ static std::string to_string(std::chrono::system_clock::time_point tp){
 
 static inline std::string convertUnixTimestamp(int64_t unixTimestamp){
     return to_string(std::chrono::system_clock::time_point(std::chrono::seconds(unixTimestamp)));
-
 }
 static inline std::string currentTime(){
     return to_string(std::chrono::system_clock::now());
 }
-
-
 
 static inline std::string convertToUUIDStr(uint128_t uuid){
     std::stringstream sstream;
@@ -254,6 +239,5 @@ static inline std::string convertToUUIDStr(uint128_t uuid){
     }
     return sstream.str();
 }
-
 
 #endif //DCPLIB_LOGHELPER_HPP

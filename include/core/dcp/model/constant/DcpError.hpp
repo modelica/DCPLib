@@ -11,9 +11,7 @@
 #define DCPLIB_DCPERROR_HPP
 
 #include <string>
-#if defined(DEBUG) || defined(LOGGING)
 #include <sstream>
-#endif
 
 /**
  * Errors which can occour in a co-simulation run
@@ -200,10 +198,8 @@ enum class DcpError : uint16_t {
      * slave description.
      */
     NOT_SUPPORTED_PDU_SIZE = 0x4006,
-
 };
 
-#if defined(DEBUG) || defined(LOGGING)
 /**
  * Adds an DcpError to an osstream in a human readable format.
  * @param str
@@ -299,7 +295,6 @@ static std::ostream &operator<<(std::ostream &os, DcpError error) {
     return os;
 }
 
-
 /**
  * Concatenate an DcpError to an string in a human readable format.
  * @param str
@@ -310,6 +305,5 @@ static std::string to_string(DcpError type) {
     oss << type;
     return oss.str();
 }
-#endif
 
 #endif //DCPLIB_DCPERROR_HPP
