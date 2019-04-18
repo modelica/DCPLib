@@ -1006,7 +1006,8 @@ protected:
                         if (var.Input.get()->String.get()->start.get() != nullptr) {
                             std::shared_ptr<std::string> startValue = var.Input.get()->String.get()->start;
                             DcpString startString(baseSize - 4);
-                            values[valueReference]->update((uint8_t *) startString.getChar(), 0, DcpDataType::string);
+                            startString.setString(*startValue);
+                            values[valueReference]->update((uint8_t *) startString.getPayload(), 0, DcpDataType::string);
                         }
                         break;
                     }
@@ -1178,7 +1179,8 @@ protected:
                         if (var.Output.get()->String.get()->start.get() != nullptr) {
                             std::shared_ptr<std::string> startValue = var.Output.get()->String.get()->start;
                             DcpString startString(baseSize - 4);
-                            values[valueReference]->update((uint8_t *) startString.getChar(), 0, DcpDataType::string);
+                            startString.setString(*startValue);
+                            values[valueReference]->update((uint8_t *) startString.getPayload(), 0, DcpDataType::string);
                         }
                         break;
                     }
@@ -1349,7 +1351,8 @@ protected:
                         if (var.Parameter.get()->String.get()->start.get() != nullptr) {
                             std::shared_ptr<std::string> startValue = var.Parameter.get()->String.get()->start;
                             DcpString startString(baseSize - 4);
-                            values[valueReference]->update((uint8_t *) startString.getChar(), 0, DcpDataType::string);
+                            startString.setString(*startValue);
+                            values[valueReference]->update((uint8_t *) startString.getPayload(), 0, DcpDataType::string);
                         }
                         break;
                     }
