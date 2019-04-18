@@ -1557,7 +1557,7 @@ protected:
                         switch (pos.second.second) {
                             case DcpDataType::binary:
                             case DcpDataType::string:
-                                correctLength += *((uint16_t *) (aciPduData.getPayload() + correctLength));
+                                correctLength += *((uint16_t *) (aciPduData.getPayload() + correctLength)) + 4;
                                 break;
                             default:
                                 correctLength += getDcpDataTypeSize(pos.second.second);
