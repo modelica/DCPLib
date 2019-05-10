@@ -846,27 +846,30 @@ protected:
             const valueReference_t &valueReference = var.valueReference;
             const DcpDataType dataType = slavedescription::getDataType(slaveDescription, valueReference);
             size_t baseSize = 0;
-            switch (dataType) {
-                case DcpDataType::binary:
-                    if (var.Input.get()->Binary.get()->maxSize != nullptr) {
-                        baseSize = *var.Input.get()->Binary.get()->maxSize;
-                    } else {
-                        baseSize = 4294967295 + 4;
-                    }
 
-                case DcpDataType::string:
-                    if (var.Input.get()->String.get()->maxSize != nullptr) {
-                        baseSize = *var.Input.get()->String.get()->maxSize;
-                    } else {
-                        baseSize = 4294967295 + 4;
-                    }
-                    break;
-                default:
-                    baseSize = getDcpDataTypeSize(dataType);
-                    break;
-            }
 
             if (var.Input != nullptr) {
+
+                switch (dataType) {
+                    case DcpDataType::binary:
+                        if (var.Input.get()->Binary.get()->maxSize != nullptr) {
+                            baseSize = *var.Input.get()->Binary.get()->maxSize;
+                        } else {
+                            baseSize = 4294967295 + 4;
+                        }
+
+                    case DcpDataType::string:
+                        if (var.Input.get()->String.get()->maxSize != nullptr) {
+                            baseSize = *var.Input.get()->String.get()->maxSize;
+                        } else {
+                            baseSize = 4294967295 + 4;
+                        }
+                        break;
+                    default:
+                        baseSize = getDcpDataTypeSize(dataType);
+                        break;
+                }
+
                 std::vector<size_t> dimensions;
                 size_t i = 0;
                 if (var.Input->dimensions.size() > 0) {
@@ -1003,7 +1006,8 @@ protected:
                         if (var.Input.get()->String.get()->start.get() != nullptr) {
                             std::shared_ptr<std::string> startValue = var.Input.get()->String.get()->start;
                             DcpString startString(baseSize - 4);
-                            values[valueReference]->update((uint8_t *) startString.getChar(), 0, DcpDataType::string);
+                            startString.setString(*startValue);
+                            values[valueReference]->update((uint8_t *) startString.getPayload(), 0, DcpDataType::string);
                         }
                         break;
                     }
@@ -1019,6 +1023,27 @@ protected:
             }
 
             if (var.Output != nullptr) {
+
+                switch (dataType) {
+                    case DcpDataType::binary:
+                        if (var.Output.get()->Binary.get()->maxSize != nullptr) {
+                            baseSize = *var.Output.get()->Binary.get()->maxSize;
+                        } else {
+                            baseSize = 4294967295 + 4;
+                        }
+
+                    case DcpDataType::string:
+                        if (var.Output.get()->String.get()->maxSize != nullptr) {
+                            baseSize = *var.Output.get()->String.get()->maxSize;
+                        } else {
+                            baseSize = 4294967295 + 4;
+                        }
+                        break;
+                    default:
+                        baseSize = getDcpDataTypeSize(dataType);
+                        break;
+                }
+
                 std::vector<size_t> dimensions;
                 size_t i = 0;
                 if (var.Output->dimensions.size() > 0) {
@@ -1154,7 +1179,8 @@ protected:
                         if (var.Output.get()->String.get()->start.get() != nullptr) {
                             std::shared_ptr<std::string> startValue = var.Output.get()->String.get()->start;
                             DcpString startString(baseSize - 4);
-                            values[valueReference]->update((uint8_t *) startString.getChar(), 0, DcpDataType::string);
+                            startString.setString(*startValue);
+                            values[valueReference]->update((uint8_t *) startString.getPayload(), 0, DcpDataType::string);
                         }
                         break;
                     }
@@ -1170,6 +1196,27 @@ protected:
             }
 
             if (var.Parameter != nullptr) {
+
+                switch (dataType) {
+                    case DcpDataType::binary:
+                        if (var.Parameter.get()->Binary.get()->maxSize != nullptr) {
+                            baseSize = *var.Parameter.get()->Binary.get()->maxSize;
+                        } else {
+                            baseSize = 4294967295 + 4;
+                        }
+
+                    case DcpDataType::string:
+                        if (var.Parameter.get()->String.get()->maxSize != nullptr) {
+                            baseSize = *var.Parameter.get()->String.get()->maxSize;
+                        } else {
+                            baseSize = 4294967295 + 4;
+                        }
+                        break;
+                    default:
+                        baseSize = getDcpDataTypeSize(dataType);
+                        break;
+                }
+
                 std::vector<size_t> dimensions;
                 size_t i = 0;
                 if (var.Parameter->dimensions.size() > 0) {
@@ -1304,7 +1351,8 @@ protected:
                         if (var.Parameter.get()->String.get()->start.get() != nullptr) {
                             std::shared_ptr<std::string> startValue = var.Parameter.get()->String.get()->start;
                             DcpString startString(baseSize - 4);
-                            values[valueReference]->update((uint8_t *) startString.getChar(), 0, DcpDataType::string);
+                            startString.setString(*startValue);
+                            values[valueReference]->update((uint8_t *) startString.getPayload(), 0, DcpDataType::string);
                         }
                         break;
                     }
@@ -1512,7 +1560,7 @@ protected:
                         switch (pos.second.second) {
                             case DcpDataType::binary:
                             case DcpDataType::string:
-                                correctLength += *((uint16_t *) (aciPduData.getPayload() + correctLength));
+                                correctLength += *((uint16_t *) (aciPduData.getPayload() + correctLength)) + 4;
                                 break;
                             default:
                                 correctLength += getDcpDataTypeSize(pos.second.second);
