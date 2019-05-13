@@ -22,13 +22,13 @@ public:
      * Get the sender.
      *@return the sender.
      */
-    GET_FUN(getSender, uint8_t, 1)
+    GET_FUN(getSender, uint8_t, 3)
 
     /**
      * Get the resp_seq_id.
      *@return the resp seq id.
      */
-    GET_FUN(getRespSeqId, uint16_t, 2)
+    GET_FUN(getRespSeqId, uint16_t, 1)
 
     /**
     /* Creates a AciPduAck from existing byte array.
