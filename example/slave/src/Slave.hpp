@@ -91,10 +91,10 @@ public:
         ;
         slaveDescription.TransportProtocols.UDP_IPv4->DAT_input_output = make_DAT_ptr();
         slaveDescription.TransportProtocols.UDP_IPv4->DAT_input_output->availablePortRanges.push_back(
-                make_AviablePortRange(2048, 65535));
+                make_AvailablePortRange(2048, 65535));
         slaveDescription.TransportProtocols.UDP_IPv4->DAT_parameter = make_DAT_ptr();
         slaveDescription.TransportProtocols.UDP_IPv4->DAT_parameter->availablePortRanges.push_back(
-                make_AviablePortRange(2048, 65535));
+                make_AvailablePortRange(2048, 65535));
         slaveDescription.CapabilityFlags.canAcceptConfigPdus = true;
         slaveDescription.CapabilityFlags.canHandleReset = true;
         slaveDescription.CapabilityFlags.canHandleVariableSteps = true;
