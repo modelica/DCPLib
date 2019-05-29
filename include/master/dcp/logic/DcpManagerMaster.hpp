@@ -80,7 +80,7 @@ public:
             case DcpPduType::RSP_error_ack:
             case DcpPduType::RSP_log_ack:{
                 DcpPduRspAck &pdu = static_cast<DcpPduRspAck &>(msg);
-                if(checkSeqId(pdu.getSender(), pdu.getRespSeqId()) != 1){
+                if(lastRegisterSuccessfullSeq.count(pdu.getSender()) > 0 && checkSeqId(pdu.getSender(), pdu.getRespSeqId()) != 1){
                     if (synchronousCallback[DcpCallbackTypes::PDU_MISSED]) {
                         pduMissedListener(pdu.getSender());
                     } else {
@@ -109,10 +109,10 @@ public:
                 DcpPduRspAck &ack = static_cast<DcpPduRspAck &>(msg);
                 if(lastRegisterSeq[ack.getSender()] == ack.getRespSeqId()){
                     lastRegisterSuccessfullSeq[ack.getSender()] = ack.getRespSeqId();
-                }
-                if(lastClearSeq[ack.getSender()] == ack.getRespSeqId()){
+                    segNumsIn[ack.getSender()] = ack.getRespSeqId();
+                } else if(lastClearSeq[ack.getSender()] == ack.getRespSeqId()){
                     segNumsOut[ack.getSender()] = lastRegisterSuccessfullSeq[ack.getSender()] + 1;
-                    segNumsIn[ack.getSender()] = lastRegisterSuccessfullSeq[ack.getSender()] + 1;
+                    segNumsIn[ack.getSender()] = lastRegisterSuccessfullSeq[ack.getSender()];
                     dataSegNumsOut[ack.getSender()] = 0;
                     dataSegNumsIn[ack.getSender()] = 0;
                     lastRegisterSeq[ack.getSender()] = 0;
