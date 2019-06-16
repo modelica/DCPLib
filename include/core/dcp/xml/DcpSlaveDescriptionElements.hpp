@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universitï¿½t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -56,7 +56,7 @@ static OpMode_t make_OpMode() {
 
 
 struct BaseUnit_t {
-    uint32_t kg, m, s, A, K, mol, cd, rad;
+    int32_t kg, m, s, A, K, mol, cd, rad;
     float64_t factor, offset;
 };
 
