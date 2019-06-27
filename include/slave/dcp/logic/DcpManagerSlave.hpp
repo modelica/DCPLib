@@ -805,7 +805,7 @@ protected:
         mtxInput.unlock();
         uint32_t steps = 1;
 
-        for (std::tuple<std::vector<uint16_t>, uint32_t, uint32_t> el : outputCounter) {
+        for (std::tuple<std::vector<uint16_t>, uint32_t, uint32_t> &el : outputCounter) {
             std::get<1>(el) -= steps;
             if (std::get<1>(el) == 0) {
                 std::get<1>(el) = 0 + std::get<2>(el);
