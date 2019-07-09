@@ -857,7 +857,7 @@ protected:
                         } else {
                             baseSize = 4294967295 + 4;
                         }
-
+                        break;
                     case DcpDataType::string:
                         if (var.Input.get()->String.get()->maxSize != nullptr) {
                             baseSize = *var.Input.get()->String.get()->maxSize;
@@ -1031,7 +1031,7 @@ protected:
                         } else {
                             baseSize = 4294967295 + 4;
                         }
-
+                        break;
                     case DcpDataType::string:
                         if (var.Output.get()->String.get()->maxSize != nullptr) {
                             baseSize = *var.Output.get()->String.get()->maxSize;
