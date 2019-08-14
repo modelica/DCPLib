@@ -727,11 +727,18 @@ protected:
         stateChangePossible[DcpState::RUNNING][DcpPduType::DAT_input_output] = true;
         stateChangePossible[DcpState::RUNNING][DcpPduType::DAT_parameter] = true;
 
-        stateChangePossible[DcpState::COMPUTING][DcpPduType::STC_send_outputs] = true;
+        stateChangePossible[DcpState::COMPUTING][DcpPduType::STC_stop] = true;
         stateChangePossible[DcpState::COMPUTING][DcpPduType::INF_state] = true;
         stateChangePossible[DcpState::COMPUTING][DcpPduType::INF_log] = true;
         stateChangePossible[DcpState::COMPUTING][DcpPduType::DAT_input_output] = true;
         stateChangePossible[DcpState::COMPUTING][DcpPduType::DAT_parameter] = true;
+
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::STC_send_outputs] = true;
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::STC_stop] = true;
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::INF_state] = true;
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::INF_log] = true;
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::DAT_input_output] = true;
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::DAT_parameter] = true;
 
         stateChangePossible[DcpState::SENDING_D][DcpPduType::INF_state] = true;
         stateChangePossible[DcpState::SENDING_D][DcpPduType::INF_log] = true;
