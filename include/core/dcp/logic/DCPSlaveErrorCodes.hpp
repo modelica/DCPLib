@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit‰t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit√§t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -196,7 +196,7 @@ static const LogTemplate DATA_NOT_ALLOWED = LogTemplate(logId++, LogCategory::DC
                                                  "It is not allowed to receive Data PDUs in state %uint8. PDU will be dropped.",
                                                  {DcpDataType::state});
 
-static const LogTemplate START_TIME = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_ERROR,
+static const LogTemplate START_TIME = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_DEBUG,
                                            "Simulation starts at %string.", {DcpDataType::string});
 static const LogTemplate INVALID_START_TIME = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_ERROR,
                                                    "Start time (%string) is before current time (%string)",
