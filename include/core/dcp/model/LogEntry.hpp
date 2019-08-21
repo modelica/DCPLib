@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit‰t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit√§t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -123,6 +123,11 @@ public:
                 }
                 case DcpDataType::state: {
                     value = to_string(*((DcpState*) (payload + offset)));
+                    offset += 1;
+                    break;
+                }
+                case DcpDataType::opMode: {
+                    value = to_string(*((DcpOpMode*) (payload + offset)));
                     offset += 1;
                     break;
                 }
