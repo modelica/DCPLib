@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit‰t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit√§t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -299,6 +299,7 @@ public:
                     Log(ASSIGNED_INPUT, valueReference, sourceDataType,
                         slavedescription::getDataType(slaveDescription, valueReference));
 #endif
+                    notifyInputOutputUpdateListener(valueReference);
                 }
                 break;
             }
@@ -2484,6 +2485,8 @@ case DcpDataType::input: \
     virtual void notifyMissingInputOutputPduListener(uint16_t dataId) = 0;
 
     virtual void notifyMissingParameterPduListener(uint16_t paramId) = 0;
+
+    virtual void notifyInputOutputUpdateListener(uint64_t valueReference) = 0;
 
     virtual void prepare() = 0;
 
