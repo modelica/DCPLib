@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz UniversitÃ¤t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -1484,7 +1484,9 @@ protected:
                 uint16_t diff = checkSeqIdInOut(dcpPduDatInputOutput.getDataId(), dcpPduDatInputOutput.getPduSeqId());
                 if (diff != 1) {
                     notifyMissingInputOutputPduListener(dcpPduDatInputOutput.getDataId());
+#if defined(DEBUG) || defined(LOGGING)
                     Log(IN_OUT_PDU_MISSED);
+#endif
                 }
                 if(maxConsecMissedPduData[dcpPduDatInputOutput.getDataId()] > 0 && maxConsecMissedPduData[dcpPduDatInputOutput.getDataId()] < diff){
                     gotoErrorHandling();
@@ -1499,7 +1501,9 @@ protected:
                 uint16_t diff = checkSeqIdParam(dcpPduDatParameter.getParamId(), dcpPduDatParameter.getPduSeqId());
                 if (diff != 1) {
                     notifyMissingParameterPduListener(dcpPduDatParameter.getParamId());
+#if defined(DEBUG) || defined(LOGGING)
                     Log(PARAM_PDU_MISSED);
+#endif
                 }
                 if(maxConsecMissedPduParam[dcpPduDatParameter.getParamId()] > 0 && maxConsecMissedPduParam[dcpPduDatParameter.getParamId()] < diff){
                     gotoErrorHandling();
