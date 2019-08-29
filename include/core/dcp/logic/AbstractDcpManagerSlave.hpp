@@ -1519,7 +1519,9 @@ protected:
                     if (diff != 1) {
                         error = DcpError::INVALID_SEQUENCE_ID;
                         notifyMissingControlPduListener();
+#if defined(DEBUG) || defined(LOGGING)
                         Log(CTRL_PDU_MISSED);
+#endif
                     }
                 }
                 break;
