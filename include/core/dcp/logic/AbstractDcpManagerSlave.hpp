@@ -50,11 +50,9 @@
 #include <dcp/logic/AbstractDcpManager.hpp>
 #include <dcp/xml/DcpSlaveDescriptionElements.hpp>
 
-#if defined(DEBUG) || defined(LOGGING)
 #include <dcp/logic/DCPSlaveErrorCodes.hpp>
 #include <dcp/model/pdu/DcpPduRspErrorAck.hpp>
 
-#endif
 
 #ifdef ERROR
 /* windows has already an error define */
