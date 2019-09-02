@@ -13,12 +13,12 @@
 #include <fstream>
 #include <memory>
 
+#include <dcp/helper/LogHelper.hpp>
 #include <dcp/model/pdu/DcpPduFactory.hpp>
 #include <dcp/xml/DcpSlaveDescriptionReader.hpp>
 #include <dcp/driver/ethernet/udp/UdpDriver.hpp>
 #include <dcp/logic/DcpManagerMaster.hpp>
 #include <dcp/log/OstreamLog.hpp>
-#include <dcp/helper/LogHelper.hpp>
 
 
 /**
