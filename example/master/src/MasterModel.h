@@ -18,6 +18,7 @@
 #include <dcp/driver/ethernet/udp/UdpDriver.hpp>
 #include <dcp/logic/DcpManagerMaster.hpp>
 #include <dcp/log/OstreamLog.hpp>
+#include <dcp/helper/LogHelper.hpp>
 
 
 /**
