@@ -132,7 +132,7 @@ protected:
 
     uint16_t checkSeqId(const uint8_t acuId, const uint16_t seqId) {
         uint16_t old = segNumsIn[acuId];
-        if (seqId == old + 1) {
+        if (seqId == (uint16_t)(old + 1)) {
             segNumsIn[acuId] = seqId;
         }
         return seqId - old;
