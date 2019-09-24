@@ -141,7 +141,11 @@ public:
                 }
                 notifyStateChange();
                 DcpPduStcRun &_run = static_cast<DcpPduStcRun &>(msg);
-                if (opMode != DcpOpMode::NRT) {
+                if (opMode == DcpOpMode::NRT) {
+                    if (state == DcpState::SYNCHRONIZING) {
+                        synchronize();
+                    }
+                } else {
                     notifyRuntimeListener(_run.getStartTime());
                     run(_run.getStartTime());
                 }
