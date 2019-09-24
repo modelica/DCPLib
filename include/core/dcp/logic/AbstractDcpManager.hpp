@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz UniversitÃ¤t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -132,18 +132,24 @@ protected:
 
     uint16_t checkSeqId(const uint8_t acuId, const uint16_t seqId) {
         uint16_t old = segNumsIn[acuId];
-        if (seqId == old + 1) {
+        if (seqId == (uint16_t)(old + 1)) {
             segNumsIn[acuId] = seqId;
         }
         return seqId - old;
     }
 
     uint16_t checkSeqIdInOut(const uint16_t dataId, const uint16_t seqId) {
-        uint16_t old = dataSegNumsIn[dataId];
-        if (seqId > old) {
-            dataSegNumsIn[dataId] = seqId;
-        }
-        return seqId - old;
+      	if (dataSegNumsIn.count(dataId)){
+		uint16_t old = dataSegNumsIn[dataId];
+	        if (seqId > old) {
+	  		dataSegNumsIn[dataId] = seqId;
+	        }
+		return seqId - old;
+      	}
+      	else {
+		dataSegNumsIn[dataId] = seqId;
+	        return 1;
+      	}
     }
 
     uint16_t checkSeqIdParam(const uint16_t parameterId,
