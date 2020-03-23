@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit‰t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit√§t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -50,11 +50,9 @@
 #include <dcp/logic/AbstractDcpManager.hpp>
 #include <dcp/xml/DcpSlaveDescriptionElements.hpp>
 
-#if defined(DEBUG) || defined(LOGGING)
 #include <dcp/logic/DCPSlaveErrorCodes.hpp>
 #include <dcp/model/pdu/DcpPduRspErrorAck.hpp>
 
-#endif
 
 #ifdef ERROR
 /* windows has already an error define */
@@ -1495,7 +1493,9 @@ protected:
                 uint16_t diff = checkSeqIdInOut(dcpPduDatInputOutput.getDataId(), dcpPduDatInputOutput.getPduSeqId());
                 if (diff != 1) {
                     notifyMissingInputOutputPduListener(dcpPduDatInputOutput.getDataId());
+#if defined(DEBUG) || defined(LOGGING)
                     Log(IN_OUT_PDU_MISSED);
+#endif
                 }
                 if(maxConsecMissedPduData[dcpPduDatInputOutput.getDataId()] > 0 && maxConsecMissedPduData[dcpPduDatInputOutput.getDataId()] < diff){
                     gotoErrorHandling();
@@ -1510,7 +1510,9 @@ protected:
                 uint16_t diff = checkSeqIdParam(dcpPduDatParameter.getParamId(), dcpPduDatParameter.getPduSeqId());
                 if (diff != 1) {
                     notifyMissingParameterPduListener(dcpPduDatParameter.getParamId());
+#if defined(DEBUG) || defined(LOGGING)
                     Log(PARAM_PDU_MISSED);
+#endif
                 }
                 if(maxConsecMissedPduParam[dcpPduDatParameter.getParamId()] > 0 && maxConsecMissedPduParam[dcpPduDatParameter.getParamId()] < diff){
                     gotoErrorHandling();
@@ -1526,7 +1528,9 @@ protected:
                     if (diff != 1) {
                         error = DcpError::INVALID_SEQUENCE_ID;
                         notifyMissingControlPduListener();
+#if defined(DEBUG) || defined(LOGGING)
                         Log(CTRL_PDU_MISSED);
+#endif
                     }
                 }
                 break;
