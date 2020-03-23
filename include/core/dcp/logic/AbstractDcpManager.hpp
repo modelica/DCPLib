@@ -137,7 +137,7 @@ protected:
         }
         return seqId - old;
     }
-
+    
     uint16_t checkSeqIdInOut(const uint16_t dataId,
                              const uint16_t seqId) {
         if (dataSegNumsIn.count(dataId)){

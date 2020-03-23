@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit‰t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit√§t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -410,6 +410,17 @@ public:
     }
 
     /**
+    * Set the listener for DAT_input_output PDUs
+    * @tparam ftype SYNC means calling the given function is blocking, ASYNC means non blocking
+    * @param errorAckReceivedListener function which will be called after the event occurs
+    */
+    template<FunctionType ftype>
+    void setInputOutputUpdateListener(const std::function<void(uint64_t)> inputOutputUpdateListener) {
+        this->inputOutputUpdateListener = std::move(inputOutputUpdateListener);
+        asynchronousCallback[DcpCallbackTypes::IN_OUT_UPDATE] = ftype == ASYNC;
+    }
+
+    /**
     * Set the listener for STC_run PDUs
     * @tparam ftype SYNC means calling the given function is blocking, ASYNC means non blocking
     * @param errorAckReceivedListener function which will be called after the event occurs
@@ -459,6 +470,7 @@ private:
     std::function<void()> missingControlPduListener = []() {};
     std::function<void(uint16_t dataId)> missingInputOutputPduListener = [](uint16_t dataId) {};
     std::function<void(uint16_t dataId)> missingParameterPduListener = [](uint16_t paramId) {};
+    std::function<void(uint64_t valueReference)> inputOutputUpdateListener = [](uint64_t valueReference) {};
     std::function<void(int64_t unixTimeStamp)> runtimeListener = [](int64_t unixTimeStamp) {};
     std::function<void(DcpState state)> stateChangedListener = [](DcpState state) {};
 
@@ -1004,6 +1016,15 @@ protected:
             t.detach();
         } else {
             missingParameterPduListener(paramId);
+        }
+    }
+
+    virtual void notifyInputOutputUpdateListener(uint64_t valueReference) override {
+        if (asynchronousCallback[DcpCallbackTypes::IN_OUT_UPDATE]) {
+            std::thread t(inputOutputUpdateListener, valueReference);
+            t.detach();
+        } else {
+            inputOutputUpdateListener(valueReference);
         }
     }
 
