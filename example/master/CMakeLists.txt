@@ -14,8 +14,6 @@ if (WIN32)
     add_definitions(-D_WIN32_WINNT=0x0600 -D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
 endif()
 
-add_definitions("-DDEBUG")
-
 find_package(DCPLib REQUIRED)
 find_package(Threads REQUIRED)
 find_package(XercesC REQUIRED)

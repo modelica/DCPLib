@@ -91,8 +91,8 @@ protected:
     std::map<uint16_t, uint16_t> dataSegNumsIn;
 
 /**
-	 * last seq. id which was send out
-	 */
+    * last seq. id which was send out
+    */
     std::map<uint16_t, uint16_t> parameterSegNumsOut;
     /**
      * last seq. id which was received
@@ -132,33 +132,40 @@ protected:
 
     uint16_t checkSeqId(const uint8_t acuId, const uint16_t seqId) {
         uint16_t old = segNumsIn[acuId];
-        if (seqId == old + 1) {
+        if (seqId == (uint16_t)(old + 1)) {
             segNumsIn[acuId] = seqId;
         }
         return seqId - old;
     }
-
-    uint16_t checkSeqIdInOut(const uint16_t dataId, const uint16_t seqId) {
-      	if (dataSegNumsIn.count(dataId)){
-		uint16_t old = dataSegNumsIn[dataId];
-	        if (seqId > old) {
-	  		dataSegNumsIn[dataId] = seqId;
-	        }
-		return seqId - old;
-      	}
-      	else {
-		dataSegNumsIn[dataId] = seqId;
-	        return 1;
+    
+    uint16_t checkSeqIdInOut(const uint16_t dataId,
+                             const uint16_t seqId) {
+        if (dataSegNumsIn.count(dataId)){
+            uint16_t old = dataSegNumsIn[dataId];
+            if (seqId > old) {
+                dataSegNumsIn[dataId] = seqId;
+            }
+            return seqId - old;
+        }
+        else {
+            dataSegNumsIn[dataId] = seqId;
+            return 1;
       	}
     }
 
     uint16_t checkSeqIdParam(const uint16_t parameterId,
                              const uint16_t seqId) {
-        uint16_t old = parameterSegNumsIn[parameterId];
-        if (seqId > old) {
-            parameterSegNumsIn[parameterId] = seqId + 1;
+        if (parameterSegNumsIn.count(parameterId)){
+            uint16_t old = parameterSegNumsIn[parameterId];
+            if (seqId > old) {
+                parameterSegNumsIn[parameterId] = seqId;
+            }
+            return seqId - old;
         }
-        return seqId - old;
+        else {
+            parameterSegNumsIn[parameterId] = seqId;
+            return 1;
+        }
     }
 
     uint16_t getNextParameterSeqNum(const uint16_t parameterId) {

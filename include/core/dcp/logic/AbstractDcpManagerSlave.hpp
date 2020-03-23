@@ -50,11 +50,9 @@
 #include <dcp/logic/AbstractDcpManager.hpp>
 #include <dcp/xml/DcpSlaveDescriptionElements.hpp>
 
-#if defined(DEBUG) || defined(LOGGING)
 #include <dcp/logic/DCPSlaveErrorCodes.hpp>
 #include <dcp/model/pdu/DcpPduRspErrorAck.hpp>
 
-#endif
 
 #ifdef ERROR
 /* windows has already an error define */
@@ -141,7 +139,11 @@ public:
                 }
                 notifyStateChange();
                 DcpPduStcRun &_run = static_cast<DcpPduStcRun &>(msg);
-                if (opMode != DcpOpMode::NRT) {
+                if (opMode == DcpOpMode::NRT) {
+                    if (state == DcpState::SYNCHRONIZING) {
+                        synchronize();
+                    }
+                } else {
                     notifyRuntimeListener(_run.getStartTime());
                     run(_run.getStartTime());
                 }
@@ -728,11 +730,18 @@ protected:
         stateChangePossible[DcpState::RUNNING][DcpPduType::DAT_input_output] = true;
         stateChangePossible[DcpState::RUNNING][DcpPduType::DAT_parameter] = true;
 
-        stateChangePossible[DcpState::COMPUTING][DcpPduType::STC_send_outputs] = true;
+        stateChangePossible[DcpState::COMPUTING][DcpPduType::STC_stop] = true;
         stateChangePossible[DcpState::COMPUTING][DcpPduType::INF_state] = true;
         stateChangePossible[DcpState::COMPUTING][DcpPduType::INF_log] = true;
         stateChangePossible[DcpState::COMPUTING][DcpPduType::DAT_input_output] = true;
         stateChangePossible[DcpState::COMPUTING][DcpPduType::DAT_parameter] = true;
+
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::STC_send_outputs] = true;
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::STC_stop] = true;
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::INF_state] = true;
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::INF_log] = true;
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::DAT_input_output] = true;
+        stateChangePossible[DcpState::COMPUTED][DcpPduType::DAT_parameter] = true;
 
         stateChangePossible[DcpState::SENDING_D][DcpPduType::INF_state] = true;
         stateChangePossible[DcpState::SENDING_D][DcpPduType::INF_log] = true;
@@ -1485,7 +1494,9 @@ protected:
                 uint16_t diff = checkSeqIdInOut(dcpPduDatInputOutput.getDataId(), dcpPduDatInputOutput.getPduSeqId());
                 if (diff != 1) {
                     notifyMissingInputOutputPduListener(dcpPduDatInputOutput.getDataId());
+#if defined(DEBUG) || defined(LOGGING)
                     Log(IN_OUT_PDU_MISSED);
+#endif
                 }
                 if(maxConsecMissedPduData[dcpPduDatInputOutput.getDataId()] > 0 && maxConsecMissedPduData[dcpPduDatInputOutput.getDataId()] < diff){
                     gotoErrorHandling();
@@ -1500,7 +1511,9 @@ protected:
                 uint16_t diff = checkSeqIdParam(dcpPduDatParameter.getParamId(), dcpPduDatParameter.getPduSeqId());
                 if (diff != 1) {
                     notifyMissingParameterPduListener(dcpPduDatParameter.getParamId());
+#if defined(DEBUG) || defined(LOGGING)
                     Log(PARAM_PDU_MISSED);
+#endif
                 }
                 if(maxConsecMissedPduParam[dcpPduDatParameter.getParamId()] > 0 && maxConsecMissedPduParam[dcpPduDatParameter.getParamId()] < diff){
                     gotoErrorHandling();
@@ -1516,7 +1529,9 @@ protected:
                     if (diff != 1) {
                         error = DcpError::INVALID_SEQUENCE_ID;
                         notifyMissingControlPduListener();
+#if defined(DEBUG) || defined(LOGGING)
                         Log(CTRL_PDU_MISSED);
+#endif
                     }
                 }
                 break;

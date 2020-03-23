@@ -113,8 +113,10 @@ public:
                 } else if(lastClearSeq[ack.getSender()] == ack.getRespSeqId()){
                     segNumsOut[ack.getSender()] = lastRegisterSuccessfullSeq[ack.getSender()] + 1;
                     segNumsIn[ack.getSender()] = lastRegisterSuccessfullSeq[ack.getSender()];
+                    // TODO dataSegNums maps dataId to seq not slave! rm these 2 lines
                     dataSegNumsOut[ack.getSender()] = 0;
                     dataSegNumsIn[ack.getSender()] = 0;
+                    // what should be done instead?
                     lastRegisterSeq[ack.getSender()] = 0;
                     lastClearSeq[ack.getSender()] = 0;
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit‰t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit√§t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -152,7 +152,7 @@ static std::ostream &operator<<(std::ostream &os, DcpState type) {
         case DcpState::INITIALIZED:
             return os << "INITIALIZED";
         case DcpState::SENDING_I:
-            return os << "SENDING_I I";
+            return os << "SENDING_I";
         case DcpState::SYNCHRONIZING:
             return os << "SYNCHRONIZING";
         case DcpState::SYNCHRONIZED:
@@ -164,7 +164,7 @@ static std::ostream &operator<<(std::ostream &os, DcpState type) {
         case DcpState::COMPUTED:
             return os << "COMPUTED";
         case DcpState::SENDING_D:
-            return os << "SENDING_D D";
+            return os << "SENDING_D";
         case DcpState::STOPPING:
             return os << "STOPPING";
         case DcpState::STOPPED:
