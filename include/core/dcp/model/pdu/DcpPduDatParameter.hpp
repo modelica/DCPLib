@@ -53,7 +53,7 @@ public:
      */
     DcpPduDatParameter(const uint16_t pdu_seq_id, const uint16_t param_id, const uint8_t *configuration,
                        const size_t configuration_size) :
-            DcpPdu(5 + configuration_size, DcpPduType::DAT_input_output) {
+            DcpPdu(5 + configuration_size, DcpPduType::DAT_parameter) {
         getPduSeqId() = pdu_seq_id;
         getParamId() = param_id;
         memcpy(getConfiguration(), configuration, configuration_size);
@@ -66,7 +66,7 @@ public:
      * @param payload the payload.
      */
     DcpPduDatParameter(const uint16_t pdu_seq_id, uint16_t param_id, uint16_t configuration_size) :
-            DcpPdu(5 + configuration_size, DcpPduType::DAT_input_output) {
+            DcpPdu(5 + configuration_size, DcpPduType::DAT_parameter) {
         getPduSeqId() = pdu_seq_id;
         getParamId() = param_id;
     }
