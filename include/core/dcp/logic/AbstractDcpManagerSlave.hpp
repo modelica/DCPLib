@@ -1025,7 +1025,7 @@ protected:
                         if (var.Input.get()->Binary.get()->start.get() != nullptr) {
                             std::shared_ptr<BinaryStartValue> startValue = var.Input.get()->Binary.get()->start;
                             DcpBinary startBinary(startValue->length, startValue->value, baseSize - 4);
-                            values[valueReference]->update(startBinary.getBinary(), 0, DcpDataType::binary);
+                            values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                         }
                         break;
                     }
@@ -1198,7 +1198,7 @@ protected:
                         if (var.Output.get()->Binary.get()->start.get() != nullptr) {
                             std::shared_ptr<BinaryStartValue> startValue = var.Output.get()->Binary.get()->start;
                             DcpBinary startBinary(startValue->length, startValue->value, baseSize - 4);
-                            values[valueReference]->update(startBinary.getBinary(), 0, DcpDataType::binary);
+                            values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                         }
                         break;
                     }
@@ -1370,7 +1370,7 @@ protected:
                         if (var.Parameter.get()->Binary.get()->start.get() != nullptr) {
                             std::shared_ptr<BinaryStartValue> startValue = var.Parameter.get()->Binary.get()->start;
                             DcpBinary startBinary(startValue->length, startValue->value, baseSize - 4);
-                            values[valueReference]->update(startBinary.getBinary(), 0, DcpDataType::binary);
+                            values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                         }
                         break;
                     }
