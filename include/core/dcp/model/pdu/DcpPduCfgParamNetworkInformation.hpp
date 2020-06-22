@@ -11,6 +11,7 @@
 #define DCPLIB_DCPPDUCFGPARAMNETWORKINFORMATION_HPP
 
 #include <dcp/model/pdu/DcpPduBasic.hpp>
+#include <dcp/model/pdu/IpToStr.hpp>
 
 /**
  * This class decscribes the structure for the Pdus "CFG_target_network_information" & "MSG_source_network_information".
@@ -126,7 +127,7 @@ public:
     virtual std::ostream &operator<<(std::ostream &os) {
         DcpPduCfgParamNetworkInformation::operator<<(os);
         os << " port=" << getPort();
-        os << " ip_address=" << getIpAddress();
+        os << " ip_address=" << ipToString(getIpAddress());
 
 
         return os;
