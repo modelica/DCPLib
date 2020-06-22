@@ -132,6 +132,11 @@ public:
                     offset += 1;
                     break;
                 }
+                case DcpDataType::dataType: {
+                    value = to_string(*((DcpDataType*)(payload + offset)));
+                    offset += 1;
+                    break;
+                }
             }
 
 
