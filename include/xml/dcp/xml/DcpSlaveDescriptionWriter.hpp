@@ -45,6 +45,15 @@ std::string to_string<uint8_t>(std::vector<uint8_t>& vector) {
     return oss.str();
 }
 
+template<>
+std::string to_string<int8_t>(std::vector<int8_t>& vector) {
+    std::ostringstream oss;
+    for (auto& value : vector) {
+        oss << signed(value) << " ";
+    }
+    return oss.str();
+}
+
 #define TO_STRING_ATTR(str, parent, attribute) str += #attribute "=\"" + to_string(parent.attribute) + "\" ";
 #define TO_STRING_ATTR_BOOL(str, parent, attribute) str += #attribute "=\"" + (parent.attribute ? std::string("true") : std::string("false")) + "\" ";
 
