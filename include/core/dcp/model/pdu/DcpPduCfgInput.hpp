@@ -74,7 +74,7 @@ public:
      */
     virtual std::ostream &operator<<(std::ostream &os) {
         DcpPduBasic::operator<<(os);
-        os << " data_id =" << getDataId();
+        os << " data_id=" << getDataId();
         os << " pos=" << getPos();
         os << " target_vr=" << getTargetVr();
         os << " source_data_type=" << getSourceDataType();
