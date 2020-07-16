@@ -147,6 +147,8 @@ static const LogTemplate INVALID_UUID = LogTemplate(logId++, LogCategory::DCP_LI
                                              {DcpDataType::string, DcpDataType::string});
 static const LogTemplate INVALID_OP_MODE = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_ERROR,
                                                 "Operation Mode %uint8 is not supported.", {DcpDataType::opMode});
+static const LogTemplate INVALID_PAYLOAD = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_ERROR,
+                                                "Invalid Payload for value reference %uint64. MaxSize exceeded. Input truncated.", { DcpDataType::uint64 });
 static const LogTemplate INVALID_MAJOR_VERSION = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_ERROR,
                                                       "The requested major version (%uint8) is not supported by this slave (DCP %uint8.%uint8)",
                                                       {DcpDataType::uint8, DcpDataType::uint8, DcpDataType::uint8});

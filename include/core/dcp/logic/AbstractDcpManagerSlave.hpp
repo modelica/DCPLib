@@ -295,8 +295,12 @@ public:
                     std::pair<uint64_t, DcpDataType> p = vrsToReceive[i];
                     uint64_t valueReference = p.first;
                     DcpDataType sourceDataType = p.second;
-
-                    offset += values[valueReference]->update(data.getPayload(), offset, sourceDataType);
+                    try {
+                        offset += values[valueReference]->update(data.getPayload(), offset, sourceDataType);
+                    }
+                    catch (std::range_error) {
+                        Log(INVALID_PAYLOAD, valueReference);
+                    }
 #ifdef DEBUG
                     Log(ASSIGNED_INPUT, valueReference, sourceDataType,
                         slavedescription::getDataType(slaveDescription, valueReference));
@@ -340,7 +344,12 @@ public:
                         updateStructualDependencies(valueReference, value);
                     } else {
                         checkForUpdatedStructure(valueReference);
-                        offset += values[valueReference]->update(param.getConfiguration(), offset, sourceDataType);
+                        try {
+                            offset += values[valueReference]->update(param.getConfiguration(), offset, sourceDataType);
+                        }
+                        catch (std::range_error) {
+                            Log(INVALID_PAYLOAD, valueReference);
+                        }
                     }
                 }
                 break;
@@ -373,8 +382,13 @@ public:
                     updateStructualDependencies(valueReference, value);
                 } else {
                     checkForUpdatedStructure(parameter.getParameterVr());
-                    values[valueReference]->update(parameter.getConfiguration(), 0,
-                                                   slavedescription::getDataType(slaveDescription, valueReference));
+                    try {
+                        values[valueReference]->update(parameter.getConfiguration(), 0,
+                                                       slavedescription::getDataType(slaveDescription, valueReference));
+                    }
+                    catch (std::range_error) {
+                        Log(INVALID_PAYLOAD, valueReference);
+                    }
                 }
                 break;
             }
