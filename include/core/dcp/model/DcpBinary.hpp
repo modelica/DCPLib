@@ -31,7 +31,20 @@ public:
         this->payload = payload;
         managed = false;
     }
-
+    
+    DcpBinary(const DcpBinary &other) {
+        payload = new uint8_t[other.getSize() + 4];
+        setBinary(other.getSize(), other.getBinary());
+        managed = true;
+    }
+    
+    DcpBinary& operator=(DcpBinary other)
+    {
+        std::swap(managed, other.managed);
+        std::swap(payload, other.payload);
+        return *this;
+    }
+    
     ~DcpBinary(){
         if(managed){
             delete[] payload;
@@ -42,7 +55,7 @@ public:
         return payload + 4;
     }
 
-    const void setBinary(uint32_t length, uint8_t* binary){
+    const void setBinary(uint32_t length, const uint8_t* binary){
         *((uint32_t*) payload) = length;
         std::copy(binary, binary + length, payload+4);
     }
