@@ -47,7 +47,7 @@ public:
      */
     virtual std::ostream &operator<<(std::ostream &os) {
         DcpPduBasic::operator<<(os);
-        os << " data_id =" << getDataId();
+        os << " data_id=" << getDataId();
         os << " transport_protocol=" << getTransportProtocol();
         return os;
     }
