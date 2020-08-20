@@ -856,6 +856,7 @@ protected:
                                                                    * ((double) steps)) * 1000000.0));
         //steps = newSteps;
         std::this_thread::sleep_until(nextCommunication);
+        realtimeState = state;
         startRealtimeStep();
     }
 
