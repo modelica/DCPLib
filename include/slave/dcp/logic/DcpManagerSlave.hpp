@@ -819,16 +819,19 @@ protected:
                 break;
             }
             case DcpState::SYNCHRONIZED: {
-                mtxInput.wait();
-                mtxOutput.wait();
+                if (state == DcpState::RUNNING || state == DcpState::SYNCHRONIZED) {
+                    mtxInput.wait();
+                    mtxOutput.wait();
 
-                if (asynchronousCallback[DcpCallbackTypes::SYNCHRONIZED_STEP]) {
-                    std::thread t(synchronizedStepCallback, steps);
-                    t.detach();
-                } else {
-                    synchronizedStepCallback(steps);
-                    std::thread t(&DcpManagerSlave::realtimeStepFinished, this);
-                    t.detach();
+                    if (asynchronousCallback[DcpCallbackTypes::SYNCHRONIZED_STEP]) {
+                        std::thread t(synchronizedStepCallback, steps);
+                        t.detach();
+                    }
+                    else {
+                        synchronizedStepCallback(steps);
+                        std::thread t(&DcpManagerSlave::realtimeStepFinished, this);
+                        t.detach();
+                    }
                 }
                 break;
             }
