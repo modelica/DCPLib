@@ -299,7 +299,9 @@ public:
                         offset += values[valueReference]->update(data.getPayload(), offset, sourceDataType);
                     }
                     catch (std::range_error) {
+#ifdef DEBUG
                         Log(INVALID_PAYLOAD, valueReference);
+#endif
                     }
 #ifdef DEBUG
                     Log(ASSIGNED_INPUT, valueReference, sourceDataType,
@@ -348,7 +350,9 @@ public:
                             offset += values[valueReference]->update(param.getConfiguration(), offset, sourceDataType);
                         }
                         catch (std::range_error) {
+#ifdef DEBUG
                             Log(INVALID_PAYLOAD, valueReference);
+#endif
                         }
                     }
                 }
@@ -387,7 +391,9 @@ public:
                                                        slavedescription::getDataType(slaveDescription, valueReference));
                     }
                     catch (std::range_error) {
+#ifdef DEBUG
                         Log(INVALID_PAYLOAD, valueReference);
+#endif
                     }
                 }
                 break;
