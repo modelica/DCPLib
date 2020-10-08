@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit‰t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit√§t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -50,11 +50,9 @@
 #include <dcp/logic/AbstractDcpManager.hpp>
 #include <dcp/xml/DcpSlaveDescriptionElements.hpp>
 
-#if defined(DEBUG) || defined(LOGGING)
 #include <dcp/logic/DCPSlaveErrorCodes.hpp>
 #include <dcp/model/pdu/DcpPduRspErrorAck.hpp>
 
-#endif
 
 #ifdef ERROR
 /* windows has already an error define */
@@ -297,12 +295,17 @@ public:
                     std::pair<uint64_t, DcpDataType> p = vrsToReceive[i];
                     uint64_t valueReference = p.first;
                     DcpDataType sourceDataType = p.second;
-
-                    offset += values[valueReference]->update(data.getPayload(), offset, sourceDataType);
+                    try {
+                        offset += values[valueReference]->update(data.getPayload(), offset, sourceDataType);
+                    }
+                    catch (std::range_error) {
+                        Log(INVALID_PAYLOAD, valueReference);
+                    }
 #ifdef DEBUG
                     Log(ASSIGNED_INPUT, valueReference, sourceDataType,
                         slavedescription::getDataType(slaveDescription, valueReference));
 #endif
+                    notifyInputOutputUpdateListener(valueReference);
                 }
                 break;
             }
@@ -341,7 +344,12 @@ public:
                         updateStructualDependencies(valueReference, value);
                     } else {
                         checkForUpdatedStructure(valueReference);
-                        offset += values[valueReference]->update(param.getConfiguration(), offset, sourceDataType);
+                        try {
+                            offset += values[valueReference]->update(param.getConfiguration(), offset, sourceDataType);
+                        }
+                        catch (std::range_error) {
+                            Log(INVALID_PAYLOAD, valueReference);
+                        }
                     }
                 }
                 break;
@@ -374,8 +382,13 @@ public:
                     updateStructualDependencies(valueReference, value);
                 } else {
                     checkForUpdatedStructure(parameter.getParameterVr());
-                    values[valueReference]->update(parameter.getConfiguration(), 0,
-                                                   slavedescription::getDataType(slaveDescription, valueReference));
+                    try {
+                        values[valueReference]->update(parameter.getConfiguration(), 0,
+                                                       slavedescription::getDataType(slaveDescription, valueReference));
+                    }
+                    catch (std::range_error) {
+                        Log(INVALID_PAYLOAD, valueReference);
+                    }
                 }
                 break;
             }
@@ -1025,8 +1038,8 @@ protected:
                     case DcpDataType::binary: {
                         if (var.Input.get()->Binary.get()->start.get() != nullptr) {
                             std::shared_ptr<BinaryStartValue> startValue = var.Input.get()->Binary.get()->start;
-                            DcpBinary startBinary(startValue->length, startValue->value, baseSize - 4);
-                            values[valueReference]->update(startBinary.getBinary(), 0, DcpDataType::binary);
+                            DcpBinary startBinary(startValue->length, startValue->value, baseSize);
+                            values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                         }
                         break;
                     }
@@ -1198,8 +1211,8 @@ protected:
                     case DcpDataType::binary: {
                         if (var.Output.get()->Binary.get()->start.get() != nullptr) {
                             std::shared_ptr<BinaryStartValue> startValue = var.Output.get()->Binary.get()->start;
-                            DcpBinary startBinary(startValue->length, startValue->value, baseSize - 4);
-                            values[valueReference]->update(startBinary.getBinary(), 0, DcpDataType::binary);
+                            DcpBinary startBinary(startValue->length, startValue->value, baseSize);
+                            values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                         }
                         break;
                     }
@@ -1370,8 +1383,8 @@ protected:
                     case DcpDataType::binary: {
                         if (var.Parameter.get()->Binary.get()->start.get() != nullptr) {
                             std::shared_ptr<BinaryStartValue> startValue = var.Parameter.get()->Binary.get()->start;
-                            DcpBinary startBinary(startValue->length, startValue->value, baseSize - 4);
-                            values[valueReference]->update(startBinary.getBinary(), 0, DcpDataType::binary);
+                            DcpBinary startBinary(startValue->length, startValue->value, baseSize);
+                            values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                         }
                         break;
                     }
@@ -1495,7 +1508,9 @@ protected:
                 uint16_t diff = checkSeqIdInOut(dcpPduDatInputOutput.getDataId(), dcpPduDatInputOutput.getPduSeqId());
                 if (diff != 1) {
                     notifyMissingInputOutputPduListener(dcpPduDatInputOutput.getDataId());
+#if defined(DEBUG) || defined(LOGGING)
                     Log(IN_OUT_PDU_MISSED);
+#endif
                 }
                 if(maxConsecMissedPduData[dcpPduDatInputOutput.getDataId()] > 0 && maxConsecMissedPduData[dcpPduDatInputOutput.getDataId()] < diff){
                     gotoErrorHandling();
@@ -1510,7 +1525,9 @@ protected:
                 uint16_t diff = checkSeqIdParam(dcpPduDatParameter.getParamId(), dcpPduDatParameter.getPduSeqId());
                 if (diff != 1) {
                     notifyMissingParameterPduListener(dcpPduDatParameter.getParamId());
+#if defined(DEBUG) || defined(LOGGING)
                     Log(PARAM_PDU_MISSED);
+#endif
                 }
                 if(maxConsecMissedPduParam[dcpPduDatParameter.getParamId()] > 0 && maxConsecMissedPduParam[dcpPduDatParameter.getParamId()] < diff){
                     gotoErrorHandling();
@@ -1526,7 +1543,9 @@ protected:
                     if (diff != 1) {
                         error = DcpError::INVALID_SEQUENCE_ID;
                         notifyMissingControlPduListener();
+#if defined(DEBUG) || defined(LOGGING)
                         Log(CTRL_PDU_MISSED);
+#endif
                     }
                 }
                 break;
@@ -2495,6 +2514,8 @@ case DcpDataType::input: \
     virtual void notifyMissingInputOutputPduListener(uint16_t dataId) = 0;
 
     virtual void notifyMissingParameterPduListener(uint16_t paramId) = 0;
+
+    virtual void notifyInputOutputUpdateListener(uint64_t valueReference) = 0;
 
     virtual void prepare() = 0;
 

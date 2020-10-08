@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit‰t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit√§t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -147,6 +147,8 @@ static const LogTemplate INVALID_UUID = LogTemplate(logId++, LogCategory::DCP_LI
                                              {DcpDataType::string, DcpDataType::string});
 static const LogTemplate INVALID_OP_MODE = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_ERROR,
                                                 "Operation Mode %uint8 is not supported.", {DcpDataType::opMode});
+static const LogTemplate INVALID_PAYLOAD = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_ERROR,
+                                                "Invalid Payload for value reference %uint64. MaxSize exceeded. Input truncated.", { DcpDataType::uint64 });
 static const LogTemplate INVALID_MAJOR_VERSION = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_ERROR,
                                                       "The requested major version (%uint8) is not supported by this slave (DCP %uint8.%uint8)",
                                                       {DcpDataType::uint8, DcpDataType::uint8, DcpDataType::uint8});
@@ -196,7 +198,7 @@ static const LogTemplate DATA_NOT_ALLOWED = LogTemplate(logId++, LogCategory::DC
                                                  "It is not allowed to receive Data PDUs in state %uint8. PDU will be dropped.",
                                                  {DcpDataType::state});
 
-static const LogTemplate START_TIME = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_ERROR,
+static const LogTemplate START_TIME = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_DEBUG,
                                            "Simulation starts at %string.", {DcpDataType::string});
 static const LogTemplate INVALID_START_TIME = LogTemplate(logId++, LogCategory::DCP_LIB_SLAVE, DcpLogLevel::LVL_ERROR,
                                                    "Start time (%string) is before current time (%string)",

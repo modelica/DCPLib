@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit‰t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit√§t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -11,9 +11,7 @@
 #define DCPLIB_DCPOPMODE_HPP
 
 #include <string>
-#if defined(DEBUG) || defined(LOGGING)
 #include <sstream>
-#endif
 
 /**
  * Operations modes of a DCP slave
@@ -38,7 +36,6 @@ enum class DcpOpMode : uint8_t {
     NRT = 2,
 };
 
-#if defined(DEBUG) || defined(LOGGING)
 
 /**
  * Adds an DcpOpMode to an osstream in a human readable format.
@@ -70,5 +67,4 @@ static std::string to_string(DcpOpMode type) {
     oss << type;
     return oss.str();
 }
-#endif
 #endif //DCPLIB_DCPOPMODE_HPP

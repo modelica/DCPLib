@@ -109,7 +109,10 @@ public:
     void close() {
         //one in asio queue, one existing in driver
         if(shared_from_this().use_count() == 2){
-            socket->close();
+            if (started && socket != nullptr) {
+                socket->close();
+                started = false;
+            }
 #if defined(DEBUG)
             Log(SOCKET_CLOSED, Udp::protocolName, to_string(endpoint));
 #endif

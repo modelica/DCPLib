@@ -22,7 +22,7 @@ public:
     }
 
     DcpBinary(uint32_t length, uint8_t* binary, uint32_t maxSize){
-        payload = new uint8_t[maxSize];
+        payload = new uint8_t[maxSize + 4];
         setBinary(length, binary);
         managed = true;
     }

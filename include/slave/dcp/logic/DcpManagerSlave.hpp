@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit‰t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit√§t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -11,11 +11,37 @@
 #define ACOSAR_DRIVERMANAGERSLAVE_H
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 
 #include "dcp/logic/AbstractDcpManagerSlave.hpp"
 #include <dcp/model/DcpCallbackTypes.hpp>
 
+namespace internal {
+    struct Semaphore {
+        explicit Semaphore(unsigned int value): value_(value)
+        {}
 
+        void wait() {
+            std::unique_lock<std::mutex> lock(mtx_);
+            cv_.wait(lock, [&]{
+                return value_ > 0;
+            });
+            value_--;
+        }
+
+        void post() {
+            std::unique_lock<std::mutex> lock(mtx_);
+            value_++;
+            lock.unlock();
+            cv_.notify_one();
+        }
+
+    private:
+        unsigned int value_;
+        std::mutex mtx_;
+        std::condition_variable cv_;
+    };
+}
 
 /**
  * DCP mangement of an slave
@@ -30,7 +56,9 @@ public:
      * @param driver DCP driver of the slave
      */
     DcpManagerSlave(const SlaveDescription_t &dcpSlaveDescription, DcpDriver driver) : AbstractDcpManagerSlave(
-            dcpSlaveDescription) {
+            dcpSlaveDescription),
+            mtxInput(1),
+            mtxOutput(1) {
         this->driver = driver;
     }
 
@@ -410,6 +438,17 @@ public:
     }
 
     /**
+    * Set the listener for DAT_input_output PDUs
+    * @tparam ftype SYNC means calling the given function is blocking, ASYNC means non blocking
+    * @param errorAckReceivedListener function which will be called after the event occurs
+    */
+    template<FunctionType ftype>
+    void setInputOutputUpdateListener(const std::function<void(uint64_t)> inputOutputUpdateListener) {
+        this->inputOutputUpdateListener = std::move(inputOutputUpdateListener);
+        asynchronousCallback[DcpCallbackTypes::IN_OUT_UPDATE] = ftype == ASYNC;
+    }
+
+    /**
     * Set the listener for STC_run PDUs
     * @tparam ftype SYNC means calling the given function is blocking, ASYNC means non blocking
     * @param errorAckReceivedListener function which will be called after the event occurs
@@ -459,6 +498,7 @@ private:
     std::function<void()> missingControlPduListener = []() {};
     std::function<void(uint16_t dataId)> missingInputOutputPduListener = [](uint16_t dataId) {};
     std::function<void(uint16_t dataId)> missingParameterPduListener = [](uint16_t paramId) {};
+    std::function<void(uint64_t valueReference)> inputOutputUpdateListener = [](uint64_t valueReference) {};
     std::function<void(int64_t unixTimeStamp)> runtimeListener = [](int64_t unixTimeStamp) {};
     std::function<void(DcpState state)> stateChangedListener = [](DcpState state) {};
 
@@ -481,8 +521,8 @@ protected:
     std::thread *heartbeat = NULL;
 
     /* Mutex */
-    std::mutex mtxInput;
-    std::mutex mtxOutput;
+    internal::Semaphore mtxInput;
+    internal::Semaphore mtxOutput;
     std::mutex mtxHeartbeat;
     std::mutex mtxParam;
     std::mutex mtxLog;
@@ -670,15 +710,13 @@ protected:
 
         switch (runLastExitPoint) {
             case DcpState::RUNNING: {
-                if (state == DcpState::RUNNING) {
-                    if (asynchronousCallback[DcpCallbackTypes::RUNNING_NRT_STEP]) {
-                        std::thread t(runningNRTStepCallback, steps);
-                        t.detach();
-                    } else {
-                        runningNRTStepCallback(steps);
-                        computingFinished();
-                    }
-                }
+		    if (asynchronousCallback[DcpCallbackTypes::RUNNING_NRT_STEP]) {
+			std::thread t(runningNRTStepCallback, steps);
+			t.detach();
+		    } else {
+			runningNRTStepCallback(steps);
+			computingFinished();
+		    }
                 break;
             }
             case DcpState::SYNCHRONIZING: {
@@ -752,8 +790,8 @@ protected:
         switch (realtimeState) {
             case DcpState::RUNNING: {
                 if (state == DcpState::RUNNING) {
-                    mtxInput.lock();
-                    mtxOutput.lock();
+                    mtxInput.wait();
+                    mtxOutput.wait();
 
                     if (asynchronousCallback[DcpCallbackTypes::RUNNING_STEP]) {
                         std::thread t(runningStepCallback, steps);
@@ -767,8 +805,8 @@ protected:
                 break;
             }
             case DcpState::SYNCHRONIZING: {
-                mtxInput.lock();
-                mtxOutput.lock();
+                mtxInput.wait();
+                mtxOutput.wait();
 
                 if (asynchronousCallback[DcpCallbackTypes::SYNCHRONIZING_STEP]) {
                     std::thread t(synchronizingStepCallback, steps);
@@ -781,8 +819,8 @@ protected:
                 break;
             }
             case DcpState::SYNCHRONIZED: {
-                mtxInput.lock();
-                mtxOutput.lock();
+                mtxInput.wait();
+                mtxOutput.wait();
 
                 if (asynchronousCallback[DcpCallbackTypes::SYNCHRONIZED_STEP]) {
                     std::thread t(synchronizedStepCallback, steps);
@@ -802,7 +840,7 @@ protected:
     }
 
     virtual void realtimeStepFinished() {
-        mtxInput.unlock();
+        mtxInput.post();
         uint32_t steps = 1;
 
         for (std::tuple<std::vector<uint16_t>, uint32_t, uint32_t> &el : outputCounter) {
@@ -812,7 +850,7 @@ protected:
                 sendOutputs(std::get<0>(el));
             }
         }
-        mtxOutput.unlock();
+        mtxOutput.post();
 
         nextCommunication += std::chrono::microseconds((int64_t) ((((double) numerator) / ((double) denominator)
                                                                    * ((double) steps)) * 1000000.0));
@@ -1004,6 +1042,15 @@ protected:
             t.detach();
         } else {
             missingParameterPduListener(paramId);
+        }
+    }
+
+    virtual void notifyInputOutputUpdateListener(uint64_t valueReference) override {
+        if (asynchronousCallback[DcpCallbackTypes::IN_OUT_UPDATE]) {
+            std::thread t(inputOutputUpdateListener, valueReference);
+            t.detach();
+        } else {
+            inputOutputUpdateListener(valueReference);
         }
     }
 

@@ -936,7 +936,7 @@ make_Variable_output(std::string name, valueReference_t valueReference, std::sha
 static Variable_t
 make_Variable_parameter(std::string name, valueReference_t valueReference,
                         std::shared_ptr<CommonCausality_t> Parameter) {
-    return {name, valueReference, std::shared_ptr<std::string>(), Variability::CONTINUOUS,
+    return {name, valueReference, std::shared_ptr<std::string>(), Variability::FIXED,
             std::shared_ptr<double>(), std::shared_ptr<double>(),
             std::shared_ptr<uint32_t>(), std::shared_ptr<std::string>(), std::shared_ptr<CommonCausality_t>(nullptr), std::shared_ptr<Output_t>(nullptr),
             std::move(Parameter), std::shared_ptr<StructuralParameter_t>(nullptr)};
@@ -945,7 +945,7 @@ make_Variable_parameter(std::string name, valueReference_t valueReference,
 static Variable_t
 make_Variable_structuralParameter(std::string name, valueReference_t valueReference,
                                   std::shared_ptr<StructuralParameter_t> StructuralParameter) {
-    return {name, valueReference, std::shared_ptr<std::string>(), Variability::CONTINUOUS,
+    return {name, valueReference, std::shared_ptr<std::string>(), Variability::FIXED,
             std::shared_ptr<double>(), std::shared_ptr<double>(),
             std::shared_ptr<uint32_t>(), std::shared_ptr<std::string>(), std::shared_ptr<CommonCausality_t>(nullptr), std::shared_ptr<Output_t>(nullptr),
             std::shared_ptr<CommonCausality_t>(nullptr),
