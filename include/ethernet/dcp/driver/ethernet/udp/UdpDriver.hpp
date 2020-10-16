@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universitï¿½t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -135,7 +135,7 @@ private:
     }
 
     void setSourceNetworkInformation(dataId_t dataId, port_t port, ip_address_t ip) {
-        ioIn[dataId] = getSocket(port, ip);
+        ioIn.emplace(dataId, getSocket(port, ip));
     }
 
     void setTargetNetworkInformation(dataId_t dataId, port_t port, ip_address_t ip) {
@@ -143,7 +143,7 @@ private:
     }
 
     void setParamNetworkInformation(paramId_t paramId, port_t port, ip_address_t ip) {
-        paramIn[paramId] = getSocket(port, ip);
+        paramIn.emplace(paramId, getSocket(port, ip));
     }
 
     void setTargetParamNetworkInformation(paramId_t paramId, port_t port, ip_address_t ip) {
