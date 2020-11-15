@@ -96,15 +96,17 @@ endif(BUILD_ALL OR BUILD_BLUETOOTH)
 
 if(BUILD_ALL OR BUILD_MASTER)
     ##dcplib master
-    add_library(Master INTERFACE)
+    set(MASTER_SRC logic/DcpManagerMaster.cpp)
+    list(TRANSFORM MASTER_SRC PREPEND ${PROJECT_SOURCE_DIR}/include/master/dcp/)
+    add_library(Master STATIC ${MASTER_SRC})
     add_library(DCPLib::Master ALIAS Master)
 
-    target_link_libraries(Master INTERFACE DCPLib::Core)
+    target_link_libraries(Master PUBLIC DCPLib::Core)
     if(WIN32)
         target_link_libraries(Master INTERFACE wsock32 ws2_32)
     endif()
 
-    target_include_directories(Master INTERFACE
+    target_include_directories(Master PUBLIC
             $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/master>
             $<INSTALL_INTERFACE:include/DCPLib/master>
             )
