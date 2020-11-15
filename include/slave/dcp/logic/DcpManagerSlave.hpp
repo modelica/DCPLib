@@ -16,6 +16,8 @@
 #include "dcp/logic/AbstractDcpManagerSlave.hpp"
 #include <dcp/model/DcpCallbackTypes.hpp>
 
+#include <dcp/model/pdu/DcpPduDatInputOutput.hpp>
+
 namespace internal {
     struct Semaphore {
         explicit Semaphore(unsigned int value): value_(value)
