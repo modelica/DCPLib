@@ -1,17 +1,6 @@
-/*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
- *
- * All rights reserved.
- *
- * This software may be modified and distributed under the terms
- * of the BSD 3-CLause license.  See the LICENSE file for details.
- */
-
-#ifndef DCPLIB_DCPSLAVEDESCRIPTIONWRITER_HPP
-#define DCPLIB_DCPSLAVEDESCRIPTIONWRITER_HPP
+#include "DcpSlaveDescriptionWriter.hpp"
 
 #include <dcp/model/DcpTypes.hpp>
-#include <dcp/xml/DcpSlaveDescriptionElements.hpp>
 
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
@@ -986,7 +975,7 @@ static std::string to_string(OpMode_t opMode) {
     return str + "\t</OpMode>";
 }
 
-static std::string to_string(SlaveDescription_t slaveDescription) {
+std::string to_string(SlaveDescription_t slaveDescription) {
     using namespace std;
     string str = "<dcpSlaveDescription ";
 
@@ -1031,7 +1020,7 @@ static std::string to_string(SlaveDescription_t slaveDescription) {
 }
 
 
-static bool writeDcpSlaveDescription(SlaveDescription_t slaveDescription, const char *dcpxFile) {
+bool writeDcpSlaveDescription(SlaveDescription_t slaveDescription, const char *dcpxFile) {
     try{
         std::string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + to_string(slaveDescription);
         std::ofstream outputFile;
@@ -1044,5 +1033,3 @@ static bool writeDcpSlaveDescription(SlaveDescription_t slaveDescription, const 
     }
     return false;
 }
-
-#endif //DCPLIB_DCPSLAVEDESCRIPTIONWRITER_HPP

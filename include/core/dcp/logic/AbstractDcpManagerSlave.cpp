@@ -37,6 +37,9 @@
 
 #include <dcp/model/pdu/DcpPduRspErrorAck.hpp>
 
+#include <dcp/model/DcpString.hpp>
+#include <dcp/model/DcpBinary.hpp>
+
 
 AbstractDcpManagerSlave::~AbstractDcpManagerSlave() {
     for (auto const &entry : values) {

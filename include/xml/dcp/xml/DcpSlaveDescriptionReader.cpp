@@ -1,14 +1,4 @@
-/*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
- *
- * All rights reserved.
- *
- * This software may be modified and distributed under the terms
- * of the BSD 3-CLause license.  See the LICENSE file for details.
- */
-
-#ifndef DCPLIB_DCPSLAVEDESCRIPTIONREADER_H
-#define DCPLIB_DCPSLAVEDESCRIPTIONREADER_H
+#include "DcpSlaveDescriptionReader.hpp"
 
 #include <set>
 #include <vector>
@@ -185,19 +175,7 @@ for (XMLSize_t ix = 0; ix < name##Count; ++ix)
     simpleType.node->gradient = gradient;\
     slaveDescription->TypeDefinitions.push_back(simpleType);\
 
-class AciDescriptionReaderErrorHandler : public xercesc::ErrorHandler {
-public:
-    void warning(const xercesc::SAXParseException &ex);
 
-    void error(const xercesc::SAXParseException &ex);
-
-    void fatalError(const xercesc::SAXParseException &ex);
-
-    void resetErrors();
-
-private:
-    void reportParseException(const xercesc::SAXParseException &ex);
-};
 
 void AciDescriptionReaderErrorHandler::reportParseException(const xercesc::SAXParseException &ex) {
     char *message = xercesc::XMLString::transcode(ex.getMessage());
@@ -220,8 +198,6 @@ void AciDescriptionReaderErrorHandler::fatalError(const xercesc::SAXParseExcepti
 
 void AciDescriptionReaderErrorHandler::resetErrors() {
 }
-
-
 
 std::shared_ptr<SlaveDescription_t> readSlaveDescription(const char *acuDFile) {
     using namespace xercesc;
@@ -1157,6 +1133,3 @@ std::shared_ptr<SlaveDescription_t> readSlaveDescription(const char *acuDFile) {
     }
     return slaveDescription;
 }
-
-
-#endif //DCPLIB_DCPSLAVEDESCRIPTIONREADER_H

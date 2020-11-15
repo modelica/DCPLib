@@ -16,8 +16,6 @@
 #include "dcp/logic/AbstractDcpManagerSlave.hpp"
 #include <dcp/model/DcpCallbackTypes.hpp>
 
-#include <dcp/model/pdu/DcpPduDatInputOutput.hpp>
-
 namespace internal {
     struct Semaphore {
         explicit Semaphore(unsigned int value): value_(value)
@@ -57,53 +55,17 @@ public:
      * @param dcpSlaveDescription Slave description of the slave
      * @param driver DCP driver of the slave
      */
-    DcpManagerSlave(const SlaveDescription_t &dcpSlaveDescription, DcpDriver driver) : AbstractDcpManagerSlave(
-            dcpSlaveDescription),
-            mtxInput(1),
-            mtxOutput(1) {
-        this->driver = driver;
-    }
+    DcpManagerSlave(const SlaveDescription_t &dcpSlaveDescription, DcpDriver driver);
 
-    ~DcpManagerSlave() {
-        delete initializing;
-        delete configuring;
-        delete stopping;
-        delete _doStep;
-        delete running;
-        delete heartbeat;
-    }
+    ~DcpManagerSlave();
 
     /**
      * Stops the slave if possible
      * @return True means slave switched to state STOPPING, false means no action done
      */
-    virtual bool stop() override {
-        if (!(state == DcpState::ALIVE || state == DcpState::CONFIGURATION || state == DcpState::STOPPING ||
-              state == DcpState::STOPPED || state == DcpState::ERROR_HANDLING || state == DcpState::ERROR_RESOLVED)) {
-            lastExecution++;
-            std::thread *toStop = NULL;
+    virtual bool stop() override;
 
-            if (state == DcpState::CONFIGURING) {
-                toStop = configuring;
-            } else if (state == DcpState::INITIALIZING) {
-                toStop = initializing;
-            }
-            state = DcpState::STOPPING;
-            notifyStateChange();
-            if (stopping != NULL) {
-                stopping->detach();
-                delete stopping;
-            }
-            stopping = new std::thread(&DcpManagerSlave::startStopping, this);
-            return true;
-        }
-        return false;
-    }
-
-    DcpManager getDcpManager() override {
-        return {[this](DcpPdu &msg) { receive(msg); },
-                [this](const DcpError errorCode) { reportError(errorCode); }};
-    }
+    DcpManager getDcpManager() override;
 
     /**
     * Set the callback for action followed by a STC_prepare PDU
@@ -259,23 +221,7 @@ public:
      * @pre A ASYNC callback for set{Synchronizing, Synchronized, Running}{"", NRT}Callback was called
      *
      */
-    bool simulationStepFinished() {
-        if (!asynchronousCallback[DcpCallbackTypes::SYNCHRONIZING_STEP] ||
-            !asynchronousCallback[DcpCallbackTypes::SYNCHRONIZED_STEP] ||
-            !asynchronousCallback[DcpCallbackTypes::RUNNING_STEP] ||
-            !asynchronousCallback[DcpCallbackTypes::SYNCHRONIZING_NRT_STEP] ||
-            !asynchronousCallback[DcpCallbackTypes::SYNCHRONIZED_NRT_STEP] ||
-            !asynchronousCallback[DcpCallbackTypes::RUNNING_NRT_STEP]) {
-            return false;
-        }
-
-        if (opMode == DcpOpMode::NRT) {
-            computingFinished();
-        } else {
-            realtimeStepFinished();
-        }
-        return true;
-    }
+    bool simulationStepFinished();
 
     /**
      * Preparing action is finished.
@@ -283,13 +229,7 @@ public:
      *
      * @pre A ASYNC callback for setPrepareCallback was called
      */
-    bool prepareFinished() {
-        if (!asynchronousCallback[DcpCallbackTypes::PREPARE]) {
-            return false;
-        }
-        preparingFinished();
-        return true;
-    }
+    bool prepareFinished();
 
     /**
     * Configure action is finished.
@@ -297,13 +237,7 @@ public:
     *
     * @pre A ASYNC callback for setConfigureCallback was called
     */
-    bool configureFinished() {
-        if (!asynchronousCallback[DcpCallbackTypes::PREPARE]) {
-            return false;
-        }
-        configuringFinished();
-        return true;
-    }
+    bool configureFinished();
 
     /**
    * Stop action is finished.
@@ -311,13 +245,7 @@ public:
    *
    * @pre A ASYNC callback for setStopCallback was called
    */
-    bool stopFinished() {
-        if (!asynchronousCallback[DcpCallbackTypes::STOP]) {
-            return false;
-        }
-        stoppingFinished();
-        return true;
-    }
+    bool stopFinished();
 
     /**
     * Initialize action is finished.
@@ -325,13 +253,7 @@ public:
     *
     * @pre A ASYNC callback for setInitializeCallback was called
     */
-    bool initializeFinished() {
-        if (!asynchronousCallback[DcpCallbackTypes::INITIALIZE]) {
-            return false;
-        }
-        initializingFinished();
-        return true;
-    }
+    bool initializeFinished();
 
     /**
     * Synchronize action is finished.
@@ -339,13 +261,7 @@ public:
     *
     * @pre A ASYNC callback for setSynchronizeCallback was called
     */
-    bool synchronizeFinished() {
-        if (!asynchronousCallback[DcpCallbackTypes::synchronize]) {
-            return false;
-        }
-        synchronizingFinished();
-        return true;
-    }
+    bool synchronizeFinished();
 
     /**
       * Set the listener for CFG_time_res PDUs
@@ -558,512 +474,106 @@ protected:
     *  Prepare
     **************************/
 
-    virtual void prepare() override {
-        lastExecution++;
-        if (preparing != NULL) {
-            preparing->detach();
-            delete preparing;
+    virtual void prepare() override;
 
-        }
-        preparing = new std::thread(&DcpManagerSlave::startPreparing, this);
-    }
+    void startPreparing();
 
-    void startPreparing() {
-#ifdef DEBUG
-        Log(PREPARING_STARTED);
-#endif
-        if (asynchronousCallback[DcpCallbackTypes::PREPARE]) {
-            std::thread t(prepareCallback);
-            t.detach();
-        } else {
-            prepareCallback();
-            preparingFinished();
-
-        }
-    }
-
-    virtual void preparingFinished() {
-        routineFinished<DcpState::PREPARING, DcpState::PREPARED>(PREPARING_FINISHED, PREPARING_INTERRUPTED);
-    }
+    virtual void preparingFinished();
 
     /**************************
      *  Configure
      **************************/
 
-    virtual void configure() override {
-        lastExecution++;
-        if (configuring != NULL) {
-            configuring->detach();
-            delete configuring;
+    virtual void configure() override;
 
-        }
-        configuring = new std::thread(&DcpManagerSlave::startConfiguring, this);
-    }
+    void startConfiguring();
 
-    void startConfiguring() {
-#ifdef DEBUG
-        Log(CONFIGURING_STARTED);
-#endif
-        if (asynchronousCallback[DcpCallbackTypes::CONFIGURE]) {
-            std::thread t(configureCallback);
-            t.detach();
-        } else {
-            configureCallback();
-            configuringFinished();
-
-        }
-    }
-
-    virtual void configuringFinished() {
-        routineFinished<DcpState::CONFIGURING, DcpState::CONFIGURED>(CONFIGURING_FINISHED, CONFIGURING_INTERRUPTED);
-    }
+    virtual void configuringFinished();
 
     /**************************
     *  Initialize
     **************************/
 
-    virtual void initialize() override {
-        lastExecution++;
-        if (initializing != NULL) {
-            initializing->detach();
-            delete initializing;
-        }
-        initializing = new std::thread(&DcpManagerSlave::startInitializing, this);
-    }
+    virtual void initialize() override;
 
-    void startInitializing() {
-#ifdef DEBUG
-        Log(INITIALIZING_STARTED);
-#endif
+    void startInitializing();
 
-        if (asynchronousCallback[DcpCallbackTypes::INITIALIZE]) {
-            std::thread t(initializeCallback);
-            t.detach();
-        } else {
-            initializeCallback();
-            initializingFinished();
-        }
-    }
-
-    virtual void initializingFinished() {
-        routineFinished<DcpState::INITIALIZING, DcpState::INITIALIZED>(INITIALIZING_FINISHED, INITIALIZING_INTERRUPTED);
-    }
+    virtual void initializingFinished();
 
     /**************************
      *  Synchronize
      **************************/
 
-    virtual void synchronize() override {
-        lastExecution++;
-        if (synchronizing != NULL) {
-            synchronizing->detach();
-            delete synchronizing;
-        }
-        synchronizing = new std::thread(&DcpManagerSlave::startSynchronizing, this);
-    }
+    virtual void synchronize() override;
 
-    void startSynchronizing() {
-#ifdef DEBUG
-        Log(SYNCHRONIZING_STARTED);
-#endif
+    void startSynchronizing();
 
-        if (asynchronousCallback[DcpCallbackTypes::synchronize]) {
-            std::thread t(synchronizeCallback);
-            t.detach();
-        } else {
-            synchronizeCallback();
-            synchronizingFinished();
-        }
-    }
-
-    virtual void synchronizingFinished() {
-#ifdef DEBUG
-        Log(SYNCHRONIZING_FINISHED);
-#endif
-        if (state == DcpState::SYNCHRONIZING) {
-            state = DcpState::SYNCHRONIZED;
-            realtimeState = DcpState::SYNCHRONIZED;
-            notifyStateChange();
-        } else {
-#ifdef DEBUG
-            Log(SYNCHRONIZING_INTERRUPTED);
-#endif
-        }
-    }
+    virtual void synchronizingFinished();
 
 
     /**************************
     *  Compute
     **************************/
 
-    virtual void doStep(const uint32_t steps) override {
-        if (_doStep != NULL) {
-            _doStep->detach();
-            delete _doStep;
-        }
-        _doStep = new std::thread(&DcpManagerSlave::startComputing, this,
-                                  steps);
-    }
+    virtual void doStep(const uint32_t steps) override;
 
-    void startComputing(uint32_t steps) {
-#ifdef DEBUG
-        Log(COMPUTING_STARTED);
-#endif
+    void startComputing(uint32_t steps);
 
-        switch (runLastExitPoint) {
-            case DcpState::RUNNING: {
-		    if (asynchronousCallback[DcpCallbackTypes::RUNNING_NRT_STEP]) {
-			std::thread t(runningNRTStepCallback, steps);
-			t.detach();
-		    } else {
-			runningNRTStepCallback(steps);
-			computingFinished();
-		    }
-                break;
-            }
-            case DcpState::SYNCHRONIZING: {
-                if (asynchronousCallback[DcpCallbackTypes::SYNCHRONIZING_NRT_STEP]) {
-                    std::thread t(synchronizingNRTStepCallback, steps);
-                    t.detach();
-                } else {
-                    synchronizingNRTStepCallback(steps);
-                    computingFinished();
-                }
-                break;
-            }
-            case DcpState::SYNCHRONIZED: {
-                if (asynchronousCallback[DcpCallbackTypes::SYNCHRONIZED_NRT_STEP]) {
-                    std::thread t(synchronizedNRTStepCallback, steps);
-                    t.detach();
-                } else {
-                    synchronizedNRTStepCallback(steps);
-                    computingFinished();
-                }
-                break;
-            }
-            default: {
-                //computing only from RUNNING, SYNCHRONIZING, SYNCHRONIZED possible.
-                break;
-            }
-        }
-    }
-
-    virtual void computingFinished() {
-        routineFinished<DcpState::COMPUTING, DcpState::COMPUTED>(COMPUTING_FINISHED, COMPUTING_INTERRUPTED);
-    }
+    virtual void computingFinished();
 
     /**************************
     *  Realtime
     **************************/
 
-    virtual void run(const int64_t startTime) override {
-        if (running != NULL) {
-            running->detach();
-            delete running;
-        }
-        running = new std::thread(&DcpManagerSlave::startRealtime,
-                                  this, startTime);
-    }
+    virtual void run(const int64_t startTime) override;
 
-    void startRealtime(int64_t startTime) {
-        using namespace std::chrono;
-        if (startTime == 0) {
-            nextCommunication = time_point_cast<microseconds>(system_clock::now());
-        } else {
-            nextCommunication = time_point<system_clock, microseconds>(
-                    seconds(startTime));
-            std::this_thread::sleep_until(nextCommunication);
-        }
+    void startRealtime(int64_t startTime);
 
-        if(state == DcpState::SYNCHRONIZING){
-            realtimeState = state;
-            startRealtimeStep();
-            synchronize();
-        } else if(state == DcpState::RUNNING){
-            realtimeState = state;
-        }
-    }
+    void startRealtimeStep();
 
-    void startRealtimeStep() {
-        using namespace std::chrono;
-
-        uint32_t steps = 1;
-
-        switch (realtimeState) {
-            case DcpState::RUNNING: {
-                if (state == DcpState::RUNNING) {
-                    mtxInput.wait();
-                    mtxOutput.wait();
-
-                    if (asynchronousCallback[DcpCallbackTypes::RUNNING_STEP]) {
-                        std::thread t(runningStepCallback, steps);
-                        t.detach();
-                    } else {
-                        runningStepCallback(steps);
-                        std::thread t(&DcpManagerSlave::realtimeStepFinished, this);
-                        t.detach();
-                    }
-                }
-                break;
-            }
-            case DcpState::SYNCHRONIZING: {
-                mtxInput.wait();
-                mtxOutput.wait();
-
-                if (asynchronousCallback[DcpCallbackTypes::SYNCHRONIZING_STEP]) {
-                    std::thread t(synchronizingStepCallback, steps);
-                    t.detach();
-                } else {
-                    synchronizingStepCallback(steps);
-                    std::thread t(&DcpManagerSlave::realtimeStepFinished, this);
-                    t.detach();
-                }
-                break;
-            }
-            case DcpState::SYNCHRONIZED: {
-                mtxInput.wait();
-                mtxOutput.wait();
-
-                if (asynchronousCallback[DcpCallbackTypes::SYNCHRONIZED_STEP]) {
-                    std::thread t(synchronizedStepCallback, steps);
-                    t.detach();
-                } else {
-                    synchronizedStepCallback(steps);
-                    std::thread t(&DcpManagerSlave::realtimeStepFinished, this);
-                    t.detach();
-                }
-                break;
-            }
-            default: {
-                //realtime routine is only in RUNNING, SYNCHRONIZING, SYNCHRONIZED active.
-                break;
-            }
-        }
-    }
-
-    virtual void realtimeStepFinished() {
-        mtxInput.post();
-        uint32_t steps = 1;
-
-        for (std::tuple<std::vector<uint16_t>, uint32_t, uint32_t> &el : outputCounter) {
-            std::get<1>(el) -= steps;
-            if (std::get<1>(el) == 0) {
-                std::get<1>(el) = 0 + std::get<2>(el);
-                sendOutputs(std::get<0>(el));
-            }
-        }
-        mtxOutput.post();
-
-        nextCommunication += std::chrono::microseconds((int64_t) ((((double) numerator) / ((double) denominator)
-                                                                   * ((double) steps)) * 1000000.0));
-        //steps = newSteps;
-        std::this_thread::sleep_until(nextCommunication);
-        startRealtimeStep();
-    }
+    virtual void realtimeStepFinished();
 
 
-    virtual void sendOutputs(std::vector<dataId_t> dataIdsToSend) override {
-        for (dataId_t dataId  : dataIdsToSend) {
-            if (outputAssignment.find(dataId) == outputAssignment.end()) {
-                continue;
-            }
-            DcpPduDatInputOutput *pdu = outputBuffer[dataId];
-            size_t offset = 0;
+    virtual void sendOutputs(std::vector<dataId_t> dataIdsToSend) override;
 
-            std::map<uint16_t, uint64_t> vrsToSend = outputAssignment[dataId];
-            for (uint16_t i = 0; i < vrsToSend.size(); i++) {
-                uint64_t vr = vrsToSend[i];
-
-                offset += values[vr]->serialize(pdu->getPayload(), offset);
-
-            }
-            pdu->getPduSeqId() = getNextDataSeqNum(pdu->getDataId());
-            pdu->setPduSize(offset + 5);
-
-            driver.send(*pdu);
-        }
-    }
-
-    virtual void updateLastStateRequest() override {
-        mtxHeartbeat.lock();
-        lastStateRequest = std::chrono::time_point_cast<std::chrono::microseconds>(
-                std::chrono::system_clock::now());
-        mtxHeartbeat.unlock();
-    }
+    virtual void updateLastStateRequest() override;
 
     /**************************
     *  Stop
     **************************/
 
     //In stopping there can not be another legal message. So no executionNr is needed
-    void startStopping() {
-#ifdef DEBUG
-        Log(STOPPING_STARTED);
-#endif
-        if (asynchronousCallback[DcpCallbackTypes::STOP]) {
-            std::thread t(stopCallback);
-            t.detach();
-        } else {
-            stopCallback();
-            stoppingFinished();
-        }
-    }
+    void startStopping();
 
-    virtual void stoppingFinished() {
-#ifdef DEBUG
-        Log(STOPPING_FINISHED);
-#endif
-        state = DcpState::STOPPED;
-        notifyStateChange();
-    }
+    virtual void stoppingFinished();
 
     /**************************
     *  Heartbeat
     **************************/
 
-    void startHeartbeat() override {
-        if (slaveDescription.CapabilityFlags.canMonitorHeartbeat) {
-            if (slaveDescription.Heartbeat == nullptr) {
-#ifdef DEBUG
-                Log(HEARTBEAT_IGNORED);
-#endif
-                return;
-            }
-            if (heartbeat != NULL) {
-                heartbeat->detach();
-                delete heartbeat;
-            }
-            heartbeat = new std::thread(&DcpManagerSlave::heartBeat, this);
-        }
-    }
+    void startHeartbeat() override;
 
-    void heartBeat() {
-        using namespace std::chrono;
-#ifdef DEBUG
-        Log(HEARTBEAT_STARTED);
-#endif
-        MaximumPeriodicInterval_t &interval = slaveDescription.Heartbeat->MaximumPeriodicInterval;
-        uint32_t numerator = interval.numerator;
-        uint32_t denominator = interval.denominator;
-        time_point<system_clock, microseconds> now;
-        mtxHeartbeat.lock();
-        lastStateRequest = time_point_cast<microseconds>(system_clock::now());
-        mtxHeartbeat.unlock();
-        while (!(state == DcpState::ALIVE || state == DcpState::ERROR_HANDLING || state == DcpState::ERROR_RESOLVED)) {
-            now = time_point_cast<microseconds>(system_clock::now());
+    void heartBeat();
 
-            mtxHeartbeat.lock();
-            auto between = duration_cast<microseconds>(now - lastStateRequest).count();
-            mtxHeartbeat.unlock();
-            if (between * denominator >= numerator * 1000000) {
-#ifdef DEBUG
-                Log(HEARTBEAT_MISSED, to_string(now), to_string(lastStateRequest));
-#endif
-                errorCode = DcpError::PROTOCOL_ERROR_HEARTBEAT_MISSED;
-                gotoErrorHandling();
-                gotoErrorResolved();
-            } else {
-                mtxHeartbeat.lock();
-                time_point<system_clock, microseconds> nextCheck = lastStateRequest + microseconds(
-                        (int64_t) (1000000 * ((double) numerator) / ((double) denominator)));
-                mtxHeartbeat.unlock();
-                std::this_thread::sleep_until(nextCheck);
-            }
-        }
-#ifdef DEBUG
-        Log(HEARTBEAT_STOPPED);
-#endif
-    }
+    virtual void notifyStateChangedListener() override;
 
-    virtual void notifyStateChangedListener() override {
-        if (asynchronousCallback[DcpCallbackTypes::STATE_CHANGED]) {
-            std::thread t(stateChangedListener, state);
-            t.detach();
-        } else {
-            stateChangedListener(state);
-        }
-    }
+    virtual void notifyTimeResListener() override;
 
-    virtual void notifyTimeResListener() override {
-        if (asynchronousCallback[DcpCallbackTypes::TIME_RES]) {
-            std::thread t(timeResListener, numerator, denominator);
-            t.detach();
-        } else {
-            timeResListener(numerator, denominator);
-        }
-    }
+    virtual void notifyStepsListener(uint16_t dataId, uint32_t steps) override;
 
-    virtual void notifyStepsListener(uint16_t dataId, uint32_t steps) override {
-        if (asynchronousCallback[DcpCallbackTypes::STEPS]) {
-            std::thread t(stepsListener, dataId, steps);
-            t.detach();
-        } else {
-            stepsListener(dataId, steps);
-        }
-    }
+    virtual void notifyOperationInformationListener() override;
 
-    virtual void notifyOperationInformationListener() override {
-        if (asynchronousCallback[DcpCallbackTypes::OPERATION_INFORMATION]) {
-            std::thread t(operationInformationListener, dcpId, opMode);
-            t.detach();
-        } else {
-            operationInformationListener(dcpId, opMode);
-        }
-    }
+    virtual void notifyRuntimeListener(int64_t unixTimeStamp) override;
 
-    virtual void notifyRuntimeListener(int64_t unixTimeStamp) override {
-        if (asynchronousCallback[DcpCallbackTypes::RUNTIME]) {
-            std::thread t(runtimeListener, unixTimeStamp);
-            t.detach();
-        } else {
-            runtimeListener(unixTimeStamp);
-        }
-    }
+    virtual void notifyMissingControlPduListener() override;
 
-    virtual void notifyMissingControlPduListener() override {
-        if (asynchronousCallback[DcpCallbackTypes::CONTROL_MISSED]) {
-            std::thread t(missingControlPduListener);
-            t.detach();
-        } else {
-            missingControlPduListener();
-        }
-    }
+    virtual void notifyMissingInputOutputPduListener(uint16_t dataId) override;
 
-    virtual void notifyMissingInputOutputPduListener(uint16_t dataId) override {
-        if (asynchronousCallback[DcpCallbackTypes::IN_OUT_MISSED]) {
-            std::thread t(missingInputOutputPduListener, dataId);
-            t.detach();
-        } else {
-            missingInputOutputPduListener(dataId);
-        }
-    }
+    virtual void notifyMissingParameterPduListener(uint16_t paramId) override;
 
-    virtual void notifyMissingParameterPduListener(uint16_t paramId) override {
-        if (asynchronousCallback[DcpCallbackTypes::CONTROL_MISSED]) {
-            std::thread t(missingParameterPduListener, paramId);
-            t.detach();
-        } else {
-            missingParameterPduListener(paramId);
-        }
-    }
+    virtual void notifyInputOutputUpdateListener(uint64_t valueReference) override;
 
-    virtual void notifyInputOutputUpdateListener(uint64_t valueReference) override {
-        if (asynchronousCallback[DcpCallbackTypes::IN_OUT_UPDATE]) {
-            std::thread t(inputOutputUpdateListener, valueReference);
-            t.detach();
-        } else {
-            inputOutputUpdateListener(valueReference);
-        }
-    }
-
-    virtual void reportError(const DcpError errorCode) override {
-        if (asynchronousCallback[DcpCallbackTypes::ERROR_LI]) {
-            std::thread t(errorListener, errorCode);
-            t.detach();
-        } else {
-            errorListener(errorCode);
-        }
-    }
+    virtual void reportError(const DcpError errorCode) override;
 
 };
 

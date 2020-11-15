@@ -1,16 +1,5 @@
-/*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit�t Hannover, Germany
- *
- * All rights reserved.
- *
- * This software may be modified and distributed under the terms
- * of the BSD 3-CLause license.  See the LICENSE file for details.
- */
+#include "DcpPduFactory.hpp"
 
-#ifndef DCPLIB_DCPPDUFACTORY_HPP
-#define DCPLIB_DCPPDUFACTORY_HPP
-
-#include <dcp/model/pdu/DcpPdu.hpp>
 #include <dcp/model/pdu/DcpPduBasic.hpp>
 #include <dcp/model/pdu/DcpPduCfgInput.hpp>
 #include <dcp/model/pdu/DcpPduCfgLogging.hpp>
@@ -37,7 +26,7 @@
 #include <dcp/model/pdu/DcpPduStcRegister.hpp>
 #include <dcp/model/pdu/DcpPduStcRun.hpp>
 
-static DcpPdu *makeDcpPdu(unsigned char *stream, size_t stream_size) {
+DcpPdu *makeDcpPdu(unsigned char *stream, size_t stream_size) {
     DcpPduType &type_id = *((DcpPduType * )(stream + PDU_LENGTH_INDICATOR_SIZE));
     switch (type_id) {
         case DcpPduType::STC_configure:
@@ -132,5 +121,3 @@ static DcpPdu *makeDcpPdu(unsigned char *stream, size_t stream_size) {
     }
     return new DcpPdu(stream, stream_size);
 }
-
-#endif //DCPLIB_DCPPDUFACTORY_HPP

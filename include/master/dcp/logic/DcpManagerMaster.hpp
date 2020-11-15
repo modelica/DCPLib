@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universitï¿½t Hannover, Germany
  *
  * All rights reserved.
  *
@@ -50,6 +50,7 @@
 
 #include <thread>
 #include <iostream>
+#include <cassert>
 
 /**
  * DCP management of a master.
