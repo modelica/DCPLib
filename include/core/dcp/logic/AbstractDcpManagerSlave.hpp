@@ -1593,7 +1593,7 @@ protected:
                                 correctLength += *((uint16_t *) (aciPduData.getPayload() + correctLength)) + 4;
                                 break;
                             default:
-                                correctLength += getDcpDataTypeSize(pos.second.second);
+                                correctLength += values[pos.second.first]->getPayloadSize();
                         }
                     }
                     if (aciPduData.getPduSize() != (correctLength + 5)) {
@@ -1615,7 +1615,7 @@ protected:
                                 correctLength += *((uint16_t *) (aciPduParam.getConfiguration()));
                                 break;
                             default:
-                                correctLength += getDcpDataTypeSize(pos.second.second);
+                                correctLength += values[pos.second.first]->getPayloadSize();
                                 break;
                         }
                     }
