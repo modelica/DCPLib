@@ -17,7 +17,7 @@
 #include <stdexcept>
 #include <memory>
 
-class SlaveDescription_t;
+struct SlaveDescription_t;
 
 class AciDescriptionReaderErrorHandler : public xercesc::ErrorHandler {
 public:
