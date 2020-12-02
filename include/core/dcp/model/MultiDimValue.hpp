@@ -205,6 +205,10 @@ public:
         return baseSize;
     }
 
+    inline size_t getPayloadSize(){
+        return baseSize * numberOfAssignments;
+    }
+
     template<typename T>
     inline T getValue() {
         static_assert(std::is_pointer<T>::value, "Expected a pointer");
