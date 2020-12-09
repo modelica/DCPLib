@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universitï¿½t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
  *
  * All rights reserved.
  *
@@ -25,8 +25,6 @@
 #include <dcp/model/DcpTypes.hpp>
 #include <dcp/model/constant/DcpTransportProtocol.hpp>
 #include <dcp/model/LogTemplate.hpp>
-
-#include <iostream>
 
 #ifdef __GNUG__ // gnu C++ compiler
 
