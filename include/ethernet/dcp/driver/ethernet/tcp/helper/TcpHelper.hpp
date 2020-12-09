@@ -12,7 +12,6 @@
 #include <dcp/driver/DcpDriver.hpp>
 #include <dcp/logic/Logable.hpp>
 #include <dcp/driver/ethernet/ErrorCodes.hpp>
-#include <dcp/model/pdu/DcpPduFactory.hpp>
 #include <asio.hpp>
 
 namespace Tcp {

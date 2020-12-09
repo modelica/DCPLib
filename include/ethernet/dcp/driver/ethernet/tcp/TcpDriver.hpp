@@ -12,9 +12,6 @@
 
 #define ASIO_STANDALONE
 
-#include <dcp/model/pdu/DcpPduDatInputOutput.hpp>
-#include <dcp/model/pdu/DcpPduDatParameter.hpp>
-#include <dcp/model/pdu/DcpPduBasic.hpp>
 
 #include <dcp/driver/ethernet/tcp/helper/TcpHelper.hpp>
 #include <iostream>
