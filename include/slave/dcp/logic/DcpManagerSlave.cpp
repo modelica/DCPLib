@@ -8,7 +8,8 @@
 DcpManagerSlave::DcpManagerSlave(const SlaveDescription_t &dcpSlaveDescription, DcpDriver driver) : AbstractDcpManagerSlave(
         dcpSlaveDescription),
         mtxInput(1),
-        mtxOutput(1) {
+        mtxOutput(1),
+        semStopping(0){
     this->driver = driver;
 }
 
@@ -19,6 +20,13 @@ DcpManagerSlave::~DcpManagerSlave() {
     delete _doStep;
     delete running;
     delete heartbeat;
+}
+
+void DcpManagerSlave::stopRunning(){
+    if (state == DcpState::SYNCHRONIZING || state == DcpState::SYNCHRONIZED || state == DcpState::RUNNING){
+            should_stop = true;
+            semStopping.wait();
+    }
 }
 
 bool DcpManagerSlave::stop() {
@@ -171,6 +179,8 @@ void DcpManagerSlave::configuringFinished() {
 *  Initialize
 **************************/
 void DcpManagerSlave::initialize() {
+    should_stop = false;
+
     lastExecution++;
     if (initializing != NULL) {
         initializing->detach();
@@ -258,6 +268,11 @@ void DcpManagerSlave::startComputing(uint32_t steps) {
     Log(COMPUTING_STARTED);
 #endif
 
+    if(should_stop){
+        semStopping.post();
+        return;
+    }
+
     switch (runLastExitPoint) {
         case DcpState::RUNNING: {
         if (asynchronousCallback[DcpCallbackTypes::RUNNING_NRT_STEP]) {
@@ -336,6 +351,11 @@ void DcpManagerSlave::startRealtimeStep() {
     using namespace std::chrono;
 
     uint32_t steps = 1;
+
+    if(should_stop){
+        semStopping.post();
+        return;
+    }
 
     switch (realtimeState) {
         case DcpState::RUNNING: {

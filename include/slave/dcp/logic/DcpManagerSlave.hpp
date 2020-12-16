@@ -12,6 +12,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <atomic>
 
 #include "dcp/logic/AbstractDcpManagerSlave.hpp"
 #include <dcp/model/DcpCallbackTypes.hpp>
@@ -441,6 +442,9 @@ protected:
     /* Mutex */
     internal::Semaphore mtxInput;
     internal::Semaphore mtxOutput;
+    internal::Semaphore semStopping;
+    std::atomic_bool should_stop{false};
+
     std::mutex mtxHeartbeat;
     std::mutex mtxParam;
     std::mutex mtxLog;
@@ -541,6 +545,8 @@ protected:
     /**************************
     *  Stop
     **************************/
+
+    virtual void stopRunning() override;
 
     //In stopping there can not be another legal message. So no executionNr is needed
     void startStopping();

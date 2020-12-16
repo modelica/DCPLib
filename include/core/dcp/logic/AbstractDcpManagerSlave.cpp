@@ -125,8 +125,11 @@ void AbstractDcpManagerSlave::receive(DcpPdu &msg){
             break;
         }
         case DcpPduType::STC_stop: {
+            stopRunning(); //wait for running step to complete
+            
             driver.stop();
             stop();
+            
             break;
         }
         case DcpPduType::STC_reset: {

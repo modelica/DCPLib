@@ -114,6 +114,8 @@ public:
 
 protected:
 
+    virtual void stopRunning() = 0;
+
     const SlaveDescription_t slaveDescription;
 
     std::map<DcpState, std::map<DcpPduType, bool>> stateChangePossible;
