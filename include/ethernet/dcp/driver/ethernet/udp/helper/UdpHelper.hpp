@@ -29,7 +29,7 @@ public:
 
     Socket(asio::io_service &ios, asio::ip::udp::endpoint endpoint, DcpManager &dcpManager, LogManager &_logManager);
 
-    ~Socket() {}
+    ~Socket();
 
     void send(DcpPdu &msg, asio::ip::udp::endpoint endpoint);
 

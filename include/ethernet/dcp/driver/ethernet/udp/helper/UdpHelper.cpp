@@ -10,7 +10,13 @@ Socket::Socket(asio::io_service &ios, asio::ip::udp::endpoint endpoint, DcpManag
     setLogManager(_logManager);
 }
 
-void Socket::send(DcpPdu &msg, asio::ip::udp::endpoint endpoint) {
+Socket::~Socket() {
+#if defined(DEBUG)
+        Log(SOCKET_CLOSED, Udp::protocolName, to_string(endpoint));
+#endif
+}
+
+void Socket::send(DcpPdu &msg, ASIO_NS::ip::udp::endpoint endpoint) {
 #if defined(DEBUG)
     Log(PDU_SEND, msg.to_string());
 #endif
@@ -59,8 +65,8 @@ void Socket::handle_receive(const std::error_code &error, std::size_t bytes_tran
 }
 
 void Socket::setup_receive() {
-    socket->async_receive_from(asio::buffer(data + 4, maxLength), lastAccess,
-                                std::bind(&Socket::handle_receive, this,
+    socket->async_receive_from(ASIO_NS::buffer(data + 4, maxLength), lastAccess,
+                                std::bind(&Socket::handle_receive, shared_from_this(),
                                             std::placeholders::_1,
                                             std::placeholders::_2));
 }
@@ -78,13 +84,10 @@ void Socket::start() {
 
 void Socket::close() {
     //one in asio queue, one existing in driver
-    if(shared_from_this().use_count() == 2){
+    if(shared_from_this().use_count() == 3){
         if (started && socket != nullptr) {
             socket->close();
             started = false;
         }
-#if defined(DEBUG)
-        Log(SOCKET_CLOSED, Udp::protocolName, to_string(endpoint));
-#endif
     }
 }
