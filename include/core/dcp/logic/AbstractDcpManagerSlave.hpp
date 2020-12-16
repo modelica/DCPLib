@@ -158,6 +158,7 @@ public:
                 break;
             }
             case DcpPduType::STC_stop: {
+                stopRunning(); //wait for running step to complete
                 driver.stop();
                 stop();
                 break;
@@ -579,6 +580,8 @@ public:
 
 
 protected:
+
+    virtual void stopRunning() = 0;
 
     const SlaveDescription_t slaveDescription;
 
