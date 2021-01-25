@@ -262,8 +262,12 @@ void AbstractDcpManagerSlave::receive(DcpPdu &msg){
                 std::pair<uint64_t, DcpDataType> p = vrsToReceive[i];
                 uint64_t valueReference = p.first;
                 DcpDataType sourceDataType = p.second;
-
-                offset += values[valueReference]->update(data.getPayload(), offset, sourceDataType);
+                try {
+                        offset += values[valueReference]->update(data.getPayload(), offset, sourceDataType);
+                }
+                catch (std::range_error) {
+                    Log(INVALID_PAYLOAD, valueReference);
+                }
 #ifdef DEBUG
                 Log(ASSIGNED_INPUT, valueReference, sourceDataType,
                     slavedescription::getDataType(slaveDescription, valueReference));
@@ -307,7 +311,12 @@ void AbstractDcpManagerSlave::receive(DcpPdu &msg){
                     updateStructualDependencies(valueReference, value);
                 } else {
                     checkForUpdatedStructure(valueReference);
-                    offset += values[valueReference]->update(param.getConfiguration(), offset, sourceDataType);
+                    try {
+                        offset += values[valueReference]->update(param.getConfiguration(), offset, sourceDataType);
+                    }
+                    catch (std::range_error) {
+                        Log(INVALID_PAYLOAD, valueReference);
+                    }                
                 }
             }
             break;
@@ -340,9 +349,14 @@ void AbstractDcpManagerSlave::receive(DcpPdu &msg){
                 updateStructualDependencies(valueReference, value);
             } else {
                 checkForUpdatedStructure(parameter.getParameterVr());
+                    try {
                 values[valueReference]->update(parameter.getConfiguration(), 0,
                                                 slavedescription::getDataType(slaveDescription, valueReference));
             }
+                    catch (std::range_error) {
+                        Log(INVALID_PAYLOAD, valueReference);
+                    }
+                }
             break;
         }
         case DcpPduType::CFG_tunable_parameter: {
@@ -870,8 +884,8 @@ AbstractDcpManagerSlave::AbstractDcpManagerSlave(const SlaveDescription_t _slave
                 case DcpDataType::binary: {
                     if (var.Input.get()->Binary.get()->start.get() != nullptr) {
                         std::shared_ptr<BinaryStartValue> startValue = var.Input.get()->Binary.get()->start;
-                        DcpBinary startBinary(startValue->length, startValue->value, baseSize - 4);
-                        values[valueReference]->update(startBinary.getBinary(), 0, DcpDataType::binary);
+                            DcpBinary startBinary(startValue->length, startValue->value, baseSize);
+                            values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                     }
                     break;
                 }
@@ -1043,8 +1057,8 @@ AbstractDcpManagerSlave::AbstractDcpManagerSlave(const SlaveDescription_t _slave
                 case DcpDataType::binary: {
                     if (var.Output.get()->Binary.get()->start.get() != nullptr) {
                         std::shared_ptr<BinaryStartValue> startValue = var.Output.get()->Binary.get()->start;
-                        DcpBinary startBinary(startValue->length, startValue->value, baseSize - 4);
-                        values[valueReference]->update(startBinary.getBinary(), 0, DcpDataType::binary);
+                            DcpBinary startBinary(startValue->length, startValue->value, baseSize);
+                            values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                     }
                     break;
                 }
@@ -1215,8 +1229,8 @@ AbstractDcpManagerSlave::AbstractDcpManagerSlave(const SlaveDescription_t _slave
                 case DcpDataType::binary: {
                     if (var.Parameter.get()->Binary.get()->start.get() != nullptr) {
                         std::shared_ptr<BinaryStartValue> startValue = var.Parameter.get()->Binary.get()->start;
-                        DcpBinary startBinary(startValue->length, startValue->value, baseSize - 4);
-                        values[valueReference]->update(startBinary.getBinary(), 0, DcpDataType::binary);
+                            DcpBinary startBinary(startValue->length, startValue->value, baseSize);
+                            values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                     }
                     break;
                 }

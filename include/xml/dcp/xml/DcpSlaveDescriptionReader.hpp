@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit�t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universität Hannover, Germany
  *
  * All rights reserved.
  *
@@ -17,7 +17,7 @@
 #include <stdexcept>
 #include <memory>
 
-class SlaveDescription_t;
+struct SlaveDescription_t;
 
 class AciDescriptionReaderErrorHandler : public xercesc::ErrorHandler {
 public:
