@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit‰t Hannover, Germany
+ * Copyright (C) 2019, FG Simulation und Modellierung, Leibniz Universit√§t Hannover, Germany
  *
  * All rights reserved.
  *
