@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 
 # Project
 project(DCPLib VERSION 0.1)
@@ -20,11 +20,13 @@ option(BUILD_ZIP "Build neccessary parts for handling slave zip files" OFF)
 add_definitions(-DDEBUG)
 
 ##dcplib core
-add_library(Core INTERFACE)
+set(CORE_SRC logic/AbstractDcpManagerSlave.cpp logic/AbstractDcpManager.cpp xml/DcpSlaveDescriptionElements.cpp)
+list(TRANSFORM CORE_SRC PREPEND ${PROJECT_SOURCE_DIR}/include/core/dcp/)
+add_library(Core STATIC ${CORE_SRC})
 add_library(DCPLib::Core ALIAS Core)
 
 
-target_include_directories(Core INTERFACE
+target_include_directories(Core PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/core>
         $<INSTALL_INTERFACE:include/DCPLib/core>
         )
