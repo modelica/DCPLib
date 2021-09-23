@@ -1,14 +1,14 @@
-name: CMake
+name: build-test
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, dev, testing ]
   pull_request:
     branches: [ master ]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+  BUILD_TYPE: Debug
 
 jobs:
   build:
@@ -23,6 +23,7 @@ jobs:
     
     - name: Install dependencies
       run: |
+        sudo apt-get update
         sudo apt-get -y install libzip-dev libxerces-c-dev libasio-dev
         
     - name: Configure CMake
@@ -30,19 +31,30 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       
+    - name: make installation dir
+      run: sudo mkdir -p /usr/local/include/DCPLib/core
+      
     - name: Build
       # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: sudo cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}  --target install
       
     - name: Configure CMake master example
-      run: mkdir ${{github.workspace}}/example/master/build && cmake -B ${{github.workspace}}/example/master/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: mkdir ${{github.workspace}}/example/master/build && cmake -B ${{github.workspace}}/example/master/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{github.workspace}}/example/master/
       
     - name: Build master example
       run:  cmake --build ${{github.workspace}}/example/master/build --config ${{env.BUILD_TYPE}}      
       
     - name: Configure CMake slave example
-      run: mkdir ${{github.workspace}}/example/slave/build && cmake -B ${{github.workspace}}/example/slave/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: mkdir ${{github.workspace}}/example/slave/build && cmake -B ${{github.workspace}}/example/slave/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{github.workspace}}/example/slave/
       
     - name: Build slave example
       run: cmake --build ${{github.workspace}}/example/slave/build --config ${{env.BUILD_TYPE}}      
       
+    - name: copy Slave-Description to master build
+      run: cp ${{github.workspace}}/example/master/Example-Slave-Description.xml ${{github.workspace}}/example/master/build/  
+
+    - name: ls master build
+      run: ls ${{github.workspace}}/example/master/build/  
+      
+    - name: run examples
+      run: ${{github.workspace}}/example/slave/build/dcpslave & pid_slave=$! && cd ${{github.workspace}}/example/master/build/ && ./dcpmaster  && kill -KILL $pid_slave
