@@ -1,9 +1,10 @@
 # DCPLib #
 
-DCPLib is a C++ implementation of the Distributed Co-Simulation Protocol (DCP). It provides an API for slaves (e. g. simulators) and master tools. 
-
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 ![Build](https://github.com/clemensschiffer/DCPLib/actions/workflows/cmake.yml/badge.svg)
+
+DCPLib is a C++ implementation of the Distributed Co-Simulation Protocol (DCP). It provides an API for slaves (e. g. simulators) and master tools. 
+
 
 ## Packages ##
 | Package          | Description | Dependencies                           |
