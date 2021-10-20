@@ -15,6 +15,7 @@
 #include <vector>
 #include <string>
 #include <iomanip>
+#include <sstream>
 
 struct HardRealTime_t {};
 

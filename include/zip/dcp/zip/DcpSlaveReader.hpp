@@ -13,7 +13,7 @@
 #include <zip.h>
 #include <dcp/xml/DcpSlaveDescriptionReader.hpp>
 #include <fstream>
-
+#include <chrono>
 
 
 static std::string uncompressFileToTemp(zip* zip, std::string filename){
