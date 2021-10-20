@@ -805,6 +805,11 @@ protected:
 
         uint32_t steps = 1;
 
+        if (should_stop) {
+            semStopping.post();
+            return;
+        }
+
         switch (realtimeState) {
             case DcpState::RUNNING: {
                 if (state == DcpState::RUNNING) {
