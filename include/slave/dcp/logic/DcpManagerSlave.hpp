@@ -73,7 +73,7 @@ public:
         delete heartbeat;
     }
 
-    virtual void DcpManagerSlave::stopRunning() override {
+    virtual void stopRunning() override {
         if (state == DcpState::SYNCHRONIZING || state == DcpState::SYNCHRONIZED || state == DcpState::RUNNING) {
             should_stop = true;
             semStopping.wait();
