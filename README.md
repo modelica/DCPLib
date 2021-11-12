@@ -1,7 +1,7 @@
 # DCPLib #
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-![Build](https://github.com/clemensschiffer/DCPLib/actions/workflows/cmake.yml/badge.svg)
+[![Build](https://github.com/clemensschiffer/DCPLib/actions/workflows/cmake.yml/badge.svg)](https://github.com/modelica/DCPLib/actions/workflows/cmake.yml)
 
 DCPLib is a C++ implementation of the Distributed Co-Simulation Protocol (DCP). It provides an API for slaves (e. g. simulators) and master tools. 
 
