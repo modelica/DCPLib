@@ -127,7 +127,7 @@ public:
      */
     virtual std::ostream &operator<<(std::ostream &os) {
         DcpPduCfgNetworkInformation::operator<<(os);
-        os << " ip_address =" << ipToString(getIpAddress());
+        os << " ip_address=" << ipToString(getIpAddress());
         os << " port=" << getPort();
         return os;
     }
