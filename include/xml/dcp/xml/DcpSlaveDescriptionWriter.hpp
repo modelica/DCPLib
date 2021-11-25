@@ -239,7 +239,7 @@ static std::string to_string(std::vector<Variable_t> variables) {
                 str += "\t\t\t\t<Dimensions>";
                 NEWLINE(str)
                 for(auto& dimension : variable.Input->dimensions){
-                    str += "\t\t\t\t<Dimension ";
+                    str += "\t\t\t\t\t<Dimension ";
                     if(dimension.type == DimensionType::CONSTANT){
                         str += "constant=\"" + to_string(dimension.value) + "\" ";
                     } else {
@@ -248,7 +248,7 @@ static std::string to_string(std::vector<Variable_t> variables) {
                     str += "/>";
                     NEWLINE(str)
                 }
-                str += "\t\t\t</Dimensions>";
+                str += "\t\t\t\t</Dimensions>";
                 NEWLINE(str)
             }
             str += "\t\t\t</Input>";
@@ -362,7 +362,7 @@ static std::string to_string(std::vector<Variable_t> variables) {
                 str += "\t\t\t\t<Dimensions>";
                 NEWLINE(str)
                 for(auto& dimension : variable.Output->dimensions){
-                    str += "\t\t\t\t<Dimension ";
+                    str += "\t\t\t\t\t<Dimension ";
                     if(dimension.type == DimensionType::CONSTANT){
                         str += "constant=\"" + to_string(dimension.value) + "\" ";
                     } else {
@@ -529,7 +529,7 @@ static std::string to_string(std::vector<Variable_t> variables) {
                 str += "\t\t\t\t<Dimensions>";
                 NEWLINE(str)
                 for(auto& dimension : variable.Parameter->dimensions){
-                    str += "\t\t\t\t<Dimension ";
+                    str += "\t\t\t\t\t<Dimension ";
                     if(dimension.type == DimensionType::CONSTANT){
                         str += "constant=\"" + to_string(dimension.value) + "\" ";
                     } else {
@@ -538,7 +538,7 @@ static std::string to_string(std::vector<Variable_t> variables) {
                     str += "/>";
                     NEWLINE(str)
                 }
-                str += "\t\t\t</Dimensions>";
+                str += "\t\t\t\t</Dimensions>";
                 NEWLINE(str)
             }
             str += "\t\t\t</Parameter>";
@@ -546,7 +546,7 @@ static std::string to_string(std::vector<Variable_t> variables) {
         } else if (variable.StructuralParameter != nullptr) {
             str += "\t\t\t<StructuralParameter>";
             NEWLINE(str)
-            if(variable.Parameter->Uint8 != nullptr) {
+            if(variable.StructuralParameter->Uint8 != nullptr) {
                 str += "\t\t\t\t<Uint8 ";
                 TO_STRING_OPTIONAL_ATTR_PTR(str, variable.StructuralParameter->Uint8, min)
                 TO_STRING_OPTIONAL_ATTR_PTR(str, variable.StructuralParameter->Uint8, max)
@@ -965,12 +965,12 @@ static std::string to_string(OpMode_t opMode) {
 
     if(opMode.HardRealTime != nullptr){
         str += "\t\t<HardRealTime/>";
+        NEWLINE(str)
     }
-    NEWLINE(str)
     if(opMode.SoftRealTime != nullptr){
         str += "\t\t<SoftRealTime/>";
+        NEWLINE(str)
     }
-    NEWLINE(str)
     if(opMode.NonRealTime != nullptr){
         str += "\t\t<NonRealTime ";
         TO_STRING_ATTR_WITH_DEFAULT_PTR(str, opMode.NonRealTime, defaultSteps, 1)
