@@ -2163,7 +2163,8 @@ protected:
                 }
                 case DcpPduType::CFG_parameter: {
                     DcpPduCfgParameter &setParameter = static_cast<DcpPduCfgParameter &>(msg);
-                    if (!slavedescription::parameterExists(slaveDescription, setParameter.getParameterVr())) {
+                    if (!(slavedescription::parameterExists(slaveDescription, setParameter.getParameterVr()) || 
+						slavedescription::structuralParameterExists(slaveDescription, setParameter.getParameterVr()) ) ) {
 #if defined(DEBUG) || defined(LOGGING)
                         Log(INVALID_VALUE_REFERENCE_PARAMETER, setParameter.getParameterVr());
 #endif
