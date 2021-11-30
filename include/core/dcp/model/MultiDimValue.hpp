@@ -149,11 +149,11 @@ public:
                 for (int i = 0; i < numberOfAssignments; i++) {
                         uint32_t& length = *((uint32_t*)(payload + offset));
                         uint32_t& newLength = *((uint32_t*)(newPayload + (start + otherOffset)));
-                        if (newLength <= baseSize) {
+                        if (newLength <= baseSize - 4) {
                             length = newLength;
                         }
                         else {
-                            length = baseSize;
+                            length = baseSize - 4;
                             invalidPayload = true;
                         }
                         std::memcpy(payload + (offset + 4), newPayload + (start + otherOffset + 4), length);
