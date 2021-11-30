@@ -31,9 +31,6 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       
-    - name: make installation dir
-      run: sudo mkdir -p /usr/local/include/DCPLib/core
-      
     - name: Build
       # Build your program with the given configuration
       run: sudo cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}  --target install
@@ -42,19 +39,34 @@ jobs:
       run: mkdir ${{github.workspace}}/example/master/build && cmake -B ${{github.workspace}}/example/master/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{github.workspace}}/example/master/
       
     - name: Build master example
-      run:  cmake --build ${{github.workspace}}/example/master/build --config ${{env.BUILD_TYPE}}      
+      run:  cmake --build ${{github.workspace}}/example/master/build --config ${{env.BUILD_TYPE}}
       
     - name: Configure CMake slave example
       run: mkdir ${{github.workspace}}/example/slave/build && cmake -B ${{github.workspace}}/example/slave/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{github.workspace}}/example/slave/
       
     - name: Build slave example
-      run: cmake --build ${{github.workspace}}/example/slave/build --config ${{env.BUILD_TYPE}}      
+      run: cmake --build ${{github.workspace}}/example/slave/build --config ${{env.BUILD_TYPE}}
       
     - name: copy Slave-Description to master build
       run: cp ${{github.workspace}}/example/master/Example-Slave-Description.xml ${{github.workspace}}/example/master/build/  
-
-    - name: ls master build
-      run: ls ${{github.workspace}}/example/master/build/  
       
     - name: run examples
       run: ${{github.workspace}}/example/slave/build/dcpslave & pid_slave=$! && cd ${{github.workspace}}/example/master/build/ && ./dcpmaster  && kill -KILL $pid_slave
+
+    - name: Configure CMake struct master master example
+      run: mkdir ${{github.workspace}}/example/struc_param_master/build && cmake -B ${{github.workspace}}/example/struc_param_master/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{github.workspace}}/example/struc_param_master/      
+
+    - name: Build struct master example
+      run:  cmake --build ${{github.workspace}}/example/struc_param_master/build --config ${{env.BUILD_TYPE}}
+      
+    - name: Configure CMake struct slave example
+      run: mkdir ${{github.workspace}}/example/struc_param_slave/build && cmake -B ${{github.workspace}}/example/struc_param_slave/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{github.workspace}}/example/struc_param_slave/
+      
+    - name: Build struct slave example
+      run: cmake --build ${{github.workspace}}/example/struc_param_slave/build --config ${{env.BUILD_TYPE}}
+      
+    - name: copy Slave-Description to master build
+      run: cp ${{github.workspace}}/example/struc_param_slave/StrucParam-Slave-Description.xml ${{github.workspace}}/example/struc_param_slave/build/  
+      
+    - name: run struct example
+      run: ${{github.workspace}}/example/struc_param_slave/build/struc_param_slave & pid_slave=$! && cd ${{github.workspace}}/example/struc_param_master/build/ && ./struc_param_master  && kill -KILL $pid_slave
