@@ -13,11 +13,25 @@
 #include <zip.h>
 #include <dcp/xml/DcpSlaveDescriptionReader.hpp>
 #include <fstream>
-
+#include <chrono>
 
 
 static std::string uncompressFileToTemp(zip* zip, std::string filename){
     char const *folder = getenv("TMPDIR");
+    if (folder == nullptr)
+    {
+#ifdef __linux__
+        folder = "/tmp/";
+#endif
+#ifdef _WIN32
+        folder = getenv("TMP");
+#endif
+    }
+    if (folder == nullptr)
+    {
+        folder = "";
+    }
+
     struct zip_stat stat;
     zip_stat_init(&stat);
     zip_stat(zip, filename.c_str(), 0, &stat);

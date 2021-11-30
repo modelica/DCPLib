@@ -763,6 +763,7 @@ protected:
         stateChangePossible[DcpState::COMPUTED][DcpPduType::DAT_input_output] = true;
         stateChangePossible[DcpState::COMPUTED][DcpPduType::DAT_parameter] = true;
 
+		stateChangePossible[DcpState::SENDING_D][DcpPduType::STC_stop] = true;
         stateChangePossible[DcpState::SENDING_D][DcpPduType::INF_state] = true;
         stateChangePossible[DcpState::SENDING_D][DcpPduType::INF_log] = true;
         stateChangePossible[DcpState::SENDING_D][DcpPduType::DAT_input_output] = true;
