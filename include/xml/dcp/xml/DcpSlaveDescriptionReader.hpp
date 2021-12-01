@@ -51,7 +51,7 @@ static std::vector<T> split(std::string &str) {
 }
 
 template<>
-static std::vector<uint8_t> split(std::string &str) {
+std::vector<uint8_t> split(std::string &str) {
     std::vector<uint8_t> array;
     std::stringstream ss(str);
     uint16_t temp;
@@ -67,7 +67,7 @@ static std::vector<uint8_t> split(std::string &str) {
 }
 
 template<>
-static std::vector<int8_t> split(std::string &str) {
+std::vector<int8_t> split(std::string &str) {
     std::vector<int8_t> array;
     std::stringstream ss(str);
     auto max = std::numeric_limits<int8_t>::max();
