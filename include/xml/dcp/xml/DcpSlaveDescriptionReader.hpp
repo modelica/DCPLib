@@ -13,6 +13,7 @@
 #include <set>
 #include <vector>
 #include <limits>
+#include <algorithm>
 
 #include <dcp/model/DcpTypes.hpp>
 #include <dcp/xml/DcpSlaveDescriptionElements.hpp>
@@ -45,6 +46,28 @@ static std::vector<T> split(std::string &str) {
     T temp;
     while (ss >> temp) {
         array.push_back(temp);
+    }
+    return array;
+}
+
+template<>
+static std::vector<uint8_t> split(std::string &str) {
+    std::vector<uint8_t> array;
+    std::stringstream ss(str);
+    uint16_t temp;
+    while (ss >> temp) {
+        array.push_back(static_cast<uint8_t>(temp));
+    }
+    return array;
+}
+
+template<>
+static std::vector<int8_t> split(std::string &str) {
+    std::vector<int8_t> array;
+    std::stringstream ss(str);
+    int16_t temp;
+    while (ss >> temp) {
+        array.push_back(static_cast<int8_t>(temp));
     }
     return array;
 }
