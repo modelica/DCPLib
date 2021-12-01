@@ -328,16 +328,16 @@ public:
                         size_t value;
                         switch (slavedescription::getDataType(slaveDescription, valueReference)) {
                             case DcpDataType::uint8:
-                                value = *values[valueReference]->getValue<int8_t *>();
+                                value = *values[valueReference]->getValue<uint8_t *>();
                                 break;
                             case DcpDataType::uint16:
-                                value = *values[valueReference]->getValue<int16_t *>();
+                                value = *values[valueReference]->getValue<uint16_t *>();
                                 break;
                             case DcpDataType::uint32:
-                                value = *values[valueReference]->getValue<int32_t *>();
+                                value = *values[valueReference]->getValue<uint32_t *>();
                                 break;
                             case DcpDataType::uint64:
-                                value = *values[valueReference]->getValue<int64_t *>();
+                                value = *values[valueReference]->getValue<uint64_t *>();
                                 break;
                             default:
                                 //only uint datatypes are allowed for structual parameters
@@ -368,16 +368,16 @@ public:
                     size_t value;
                     switch (slavedescription::getDataType(slaveDescription, valueReference)) {
                         case DcpDataType::uint8:
-                            value = *values[valueReference]->getValue<int8_t *>();
+                            value = *values[valueReference]->getValue<uint8_t *>();
                             break;
                         case DcpDataType::uint16:
-                            value = *values[valueReference]->getValue<int16_t *>();
+                            value = *values[valueReference]->getValue<uint16_t *>();
                             break;
                         case DcpDataType::uint32:
-                            value = *values[valueReference]->getValue<int32_t *>();
+                            value = *values[valueReference]->getValue<uint32_t *>();
                             break;
                         case DcpDataType::uint64:
-                            value = *values[valueReference]->getValue<int64_t *>();
+                            value = *values[valueReference]->getValue<uint64_t *>();
                             break;
                         default:
                             //only uint datatypes are allowed for structual parameters
@@ -832,7 +832,7 @@ protected:
                 switch (dataType) {
                     case DcpDataType::uint8: {
                         if (var.StructuralParameter.get()->Uint8.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Uint8.get()->start;
+                            auto &startValues = *var.StructuralParameter.get()->Uint8.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -841,7 +841,7 @@ protected:
                     }
                     case DcpDataType::uint16: {
                         if (var.StructuralParameter.get()->Uint16.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Uint16.get()->start;
+                            auto &startValues = *var.StructuralParameter.get()->Uint16.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -850,7 +850,7 @@ protected:
                     }
                     case DcpDataType::uint32: {
                         if (var.StructuralParameter.get()->Uint32.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Uint32.get()->start;
+                            auto &startValues = *var.StructuralParameter.get()->Uint32.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -859,7 +859,7 @@ protected:
                     }
                     case DcpDataType::uint64: {
                         if (var.StructuralParameter.get()->Uint64.get()->start.get() != nullptr) {
-                            auto &startValues = *var.Output.get()->Uint64.get()->start;
+                            auto &startValues = *var.StructuralParameter.get()->Uint64.get()->start;
                             for (int i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
@@ -2164,7 +2164,8 @@ protected:
                 }
                 case DcpPduType::CFG_parameter: {
                     DcpPduCfgParameter &setParameter = static_cast<DcpPduCfgParameter &>(msg);
-                    if (!slavedescription::parameterExists(slaveDescription, setParameter.getParameterVr())) {
+                    if (!(slavedescription::parameterExists(slaveDescription, setParameter.getParameterVr()) || 
+						slavedescription::structuralParameterExists(slaveDescription, setParameter.getParameterVr()) ) ) {
 #if defined(DEBUG) || defined(LOGGING)
                         Log(INVALID_VALUE_REFERENCE_PARAMETER, setParameter.getParameterVr());
 #endif
@@ -2461,8 +2462,8 @@ case DcpDataType::input: \
             size_t pos = dependency.second;
             std::vector<size_t> newDimensions(values[vrToUpdate]->getDimensions());
             newDimensions[pos] = value;
-            if (slavedescription::inputExists(slaveDescription, valueReference) ||
-                slavedescription::outputExists(slaveDescription, valueReference)) {
+            if (slavedescription::inputExists(slaveDescription, vrToUpdate) ||
+                slavedescription::outputExists(slaveDescription, vrToUpdate)) {
                 values[vrToUpdate] = new MultiDimValue(slavedescription::getDataType(slaveDescription, vrToUpdate),
                                                        values[vrToUpdate]->getBaseSize(), newDimensions);
             } else {

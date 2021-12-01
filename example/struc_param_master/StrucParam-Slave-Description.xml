@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<dcpSlaveDescription dcpMajorVersion="1" dcpMinorVersion="0" dcpSlaveName="dcpslave" uuid="2fcef2a4-51d0-11ec-bf63-0242ac130002" variableNamingConvention="flat" >
+	<OpMode>
+		<SoftRealTime/>
+		<NonRealTime />
+	</OpMode>
+	<TimeRes>
+		<Resolution denominator="100" />
+	</TimeRes>
+	<TransportProtocols>
+		<UDP_IPv4 maxPduSize="65507" >
+			<Control host="127.0.0.1" port="8080" />
+			<DAT_input_output host="" >
+				<AvailablePortRange from="2048" to="65535" />
+			</DAT_input_output>
+			<DAT_parameter host="" >
+				<AvailablePortRange from="2048" to="65535" />
+			</DAT_parameter>
+		</UDP_IPv4>
+	</TransportProtocols>
+	<CapabilityFlags canAcceptConfigPdus="true" canHandleReset="true" canHandleVariableSteps="true" canProvideLogOnRequest="true" canProvideLogOnNotification="true" />
+	<Variables>
+		<Variable name="y" valueReference="1" >
+			<Output>
+				<Float64 />
+				<Dimensions>
+					<Dimension linkedVR="3" />
+				</Dimensions>
+			</Output>
+		</Variable>
+		<Variable name="a" valueReference="2" >
+			<Input>
+				<Float64 start="0 " />
+				<Dimensions>
+					<Dimension linkedVR="3" />
+				</Dimensions>
+			</Input>
+		</Variable>
+		<Variable name="dim" valueReference="3" variability="fixed" >
+			<StructuralParameter>
+				<Uint16 start="8" />
+			</StructuralParameter>
+		</Variable>
+	</Variables> 
+	<Log>
+		<Categories>
+			<Category id="1" name="DCP_SLAVE" />
+		</Categories>
+		<Templates>
+			<Template id="1" category="1" level="3" msg="[Time = %float64]: vector component %uint16 has value: %float64" />
+		</Templates>
+	</Log> 
+</dcpSlaveDescription>
