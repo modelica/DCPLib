@@ -328,16 +328,16 @@ public:
                         size_t value;
                         switch (slavedescription::getDataType(slaveDescription, valueReference)) {
                             case DcpDataType::uint8:
-                                value = *values[valueReference]->getValue<int8_t *>();
+                                value = *values[valueReference]->getValue<uint8_t *>();
                                 break;
                             case DcpDataType::uint16:
-                                value = *values[valueReference]->getValue<int16_t *>();
+                                value = *values[valueReference]->getValue<uint16_t *>();
                                 break;
                             case DcpDataType::uint32:
-                                value = *values[valueReference]->getValue<int32_t *>();
+                                value = *values[valueReference]->getValue<uint32_t *>();
                                 break;
                             case DcpDataType::uint64:
-                                value = *values[valueReference]->getValue<int64_t *>();
+                                value = *values[valueReference]->getValue<uint64_t *>();
                                 break;
                             default:
                                 //only uint datatypes are allowed for structual parameters
