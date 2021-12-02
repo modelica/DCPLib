@@ -2425,6 +2425,7 @@ case DcpDataType::input: \
         segNumsIn.clear();
         dataSegNumsOut.clear();
         dataSegNumsIn.clear();
+        parameterSegNumsIn.clear();
 
         steps.clear();
         runningScope.clear();
