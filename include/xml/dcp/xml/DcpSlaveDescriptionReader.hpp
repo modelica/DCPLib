@@ -40,7 +40,7 @@
 // Macros
 
 template<typename T>
-static std::vector<T> split(std::string &str) {
+inline std::vector<T> split(std::string &str) {
     std::vector<T> array;
     std::stringstream ss(str);
     T temp;
@@ -51,7 +51,7 @@ static std::vector<T> split(std::string &str) {
 }
 
 template<>
-std::vector<uint8_t> split(std::string &str) {
+inline std::vector<uint8_t> split(std::string &str) {
     std::vector<uint8_t> array;
     std::stringstream ss(str);
     uint16_t temp;
@@ -67,7 +67,7 @@ std::vector<uint8_t> split(std::string &str) {
 }
 
 template<>
-std::vector<int8_t> split(std::string &str) {
+inline std::vector<int8_t> split(std::string &str) {
     std::vector<int8_t> array;
     std::stringstream ss(str);
     auto max = std::numeric_limits<int8_t>::max();
