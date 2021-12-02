@@ -165,6 +165,11 @@ public:
             case DcpPduType::STC_reset: {
                 errorCode = DcpError::NONE;
                 state = DcpState::CONFIGURATION;
+                clearConfig();
+                segNumsIn[masterId] = seqAtRegister;
+#ifdef DEBUG
+                Log(NEXT_SEQUENCE_ID_FROM_MASTER, (uint16_t)(segNumsIn[masterId] + 1));
+#endif
                 notifyStateChange();
                 startHeartbeat();
                 break;
