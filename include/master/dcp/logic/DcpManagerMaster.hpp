@@ -698,7 +698,7 @@ public:
     * @pre setTargetNetworkInformation of the given DcpDriver was called for dcpId before
     */
     void DAT_input_output(const uint16_t dataId, uint8_t *configuration, size_t configurationLength) {
-        DcpPduDatInputOutput data = {getNextParameterSeqNum(dataId), dataId, configuration, configurationLength};
+        DcpPduDatInputOutput data = { getNextDataSeqNum(dataId), dataId, configuration, configurationLength};
         driver.send(data);
     }
 
