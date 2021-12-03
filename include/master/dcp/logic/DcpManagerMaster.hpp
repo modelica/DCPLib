@@ -113,10 +113,20 @@ public:
                 } else if(lastClearSeq[ack.getSender()] == ack.getRespSeqId()){
                     segNumsOut[ack.getSender()] = lastRegisterSuccessfullSeq[ack.getSender()] + 1;
                     segNumsIn[ack.getSender()] = lastRegisterSuccessfullSeq[ack.getSender()];
-                    // TODO dataSegNums maps dataId to seq not slave! rm these 2 lines
-                    dataSegNumsOut[ack.getSender()] = 0;
-                    dataSegNumsIn[ack.getSender()] = 0;
-                    // what should be done instead?
+
+                    for (auto curDataId : slaveIdToDataIdIn[ack.getSender()]) {
+                        dataSegNumsIn[curDataId] = 0;
+                    }
+                    slaveIdToDataIdIn[ack.getSender()].clear();
+                    for (auto curDataId : slaveIdToDataIdOut[ack.getSender()]) {
+                        dataSegNumsOut[curDataId] = 0;
+                    }
+                    slaveIdToDataIdOut[ack.getSender()].clear();
+                    for (auto curParamId : slaveIdToParamId[ack.getSender()]) {
+                        parameterSegNumsOut[curParamId] = 0;
+                    }
+                    slaveIdToParamId[ack.getSender()].clear();
+                    
                     lastRegisterSeq[ack.getSender()] = 0;
                     lastClearSeq[ack.getSender()] = 0;
                 }
@@ -523,6 +533,7 @@ public:
         DcpPduCfgNetworkInformationIPv4 pdu = {DcpPduType::CFG_target_network_information, getNextSeqNum(dcpId),
                                                    dcpId, dataId, port, ipAddress,  DcpTransportProtocol::UDP_IPv4};
         driver.send(pdu);
+        slaveIdToDataIdIn[dcpId].push_back(dataId);
     }
 
     /**
@@ -541,6 +552,7 @@ public:
         DcpPduCfgNetworkInformationIPv4 pdu = {DcpPduType::CFG_target_network_information, getNextSeqNum(dcpId),
                                                    dcpId, dataId, port, ipAddress,  DcpTransportProtocol::TCP_IPv4};
         driver.send(pdu);
+        slaveIdToDataIdIn[dcpId].push_back(dataId);
     }
 
     /**
@@ -558,6 +570,7 @@ public:
         DcpPduCfgNetworkInformationIPv4 pdu = {DcpPduType::CFG_source_network_information, getNextSeqNum(dcpId),
                                                    dcpId, dataId, port, ipAddress, DcpTransportProtocol::UDP_IPv4};
         driver.send(pdu);
+        slaveIdToDataIdOut[dcpId].push_back(dataId);
     }
 
     /**
@@ -575,6 +588,7 @@ public:
         DcpPduCfgNetworkInformationIPv4 pdu = {DcpPduType::CFG_source_network_information, getNextSeqNum(dcpId),
                                                    dcpId, dataId, port, ipAddress, DcpTransportProtocol::TCP_IPv4};
         driver.send(pdu);
+        slaveIdToDataIdOut[dcpId].push_back(dataId);
     }
 
     /**
@@ -629,6 +643,7 @@ public:
         DcpPduCfgParamNetworkInformationIPv4 aciPduSetParamNetworkInformationUdp = {getNextSeqNum(dcpId), dcpId, paramId,
                                                                                    port, ipAddress, DcpTransportProtocol::UDP_IPv4};
         driver.send(aciPduSetParamNetworkInformationUdp);
+        slaveIdToParamId[dcpId].push_back(paramId);
     }
 
     /**
@@ -646,6 +661,7 @@ public:
         DcpPduCfgParamNetworkInformationIPv4 aciPduSetParamNetworkInformationUdp = {getNextSeqNum(dcpId), dcpId, paramId,
                                                                                         port, ipAddress, DcpTransportProtocol::TCP_IPv4};
         driver.send(aciPduSetParamNetworkInformationUdp);
+        slaveIdToParamId[dcpId].push_back(paramId);
     }
 
     /**
@@ -898,6 +914,10 @@ private:
     std::map<uint8_t, uint16_t> lastRegisterSeq;
     std::map<uint8_t, uint16_t> lastRegisterSuccessfullSeq;
     std::map<uint8_t, uint16_t> lastClearSeq;
+
+    std::map<uint8_t, std::list<uint16_t>> slaveIdToDataIdIn;
+    std::map<uint8_t, std::list<uint16_t>> slaveIdToDataIdOut;
+    std::map<uint8_t, std::list<uint16_t>> slaveIdToParamId;
 
     std::map<DcpCallbackTypes, bool> synchronousCallback;
     std::function<void(uint8_t sender, uint16_t pduSeqId)> ackReceivedListener = [](uint8_t sender,
