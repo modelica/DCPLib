@@ -12,6 +12,7 @@
 
 #include <cstdint>
 #include <map>
+#include <list>
 
 #include <dcp/logic/DcpManager.hpp>
 #include <dcp/driver/DcpDriver.hpp>
