@@ -76,7 +76,9 @@ public:
     virtual void stopRunning() override {
         if (state == DcpState::SYNCHRONIZING || state == DcpState::SYNCHRONIZED || state == DcpState::RUNNING) {
             should_stop = true;
-            semStopping.wait();
+            if(DcpOpMode::SRT == opMode || DcpOpMode::HRT == opMode) {
+                semStopping.wait();
+            }
         }
     }
 
