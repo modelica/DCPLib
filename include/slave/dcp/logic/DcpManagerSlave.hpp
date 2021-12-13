@@ -601,11 +601,11 @@ protected:
      **************************/
 
     virtual void configure() override {
+        should_stop = false;
         lastExecution++;
         if (configuring != NULL) {
             configuring->detach();
             delete configuring;
-
         }
         configuring = new std::thread(&DcpManagerSlave::startConfiguring, this);
     }
@@ -633,7 +633,6 @@ protected:
     **************************/
 
     virtual void initialize() override {
-        should_stop = false;
         lastExecution++;
         if (initializing != NULL) {
             initializing->detach();
