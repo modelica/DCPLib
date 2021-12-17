@@ -13,6 +13,7 @@
 #include <set>
 #include <vector>
 #include <limits>
+#include <algorithm>
 
 #include <dcp/model/DcpTypes.hpp>
 #include <dcp/xml/DcpSlaveDescriptionElements.hpp>
@@ -39,12 +40,48 @@
 // Macros
 
 template<typename T>
-static std::vector<T> split(std::string &str) {
+inline std::vector<T> split(std::string &str) {
     std::vector<T> array;
     std::stringstream ss(str);
     T temp;
     while (ss >> temp) {
         array.push_back(temp);
+    }
+    return array;
+}
+
+template<>
+inline std::vector<uint8_t> split(std::string &str) {
+    std::vector<uint8_t> array;
+    std::stringstream ss(str);
+    uint16_t temp;
+    auto max = std::numeric_limits<uint8_t>::max();
+    while (ss >> temp) {
+        uint8_t num = std::min(temp, (uint16_t)max);
+        if (temp > max) {
+            throw std::overflow_error("Read value is greater than uint8 maximum.");
+        }
+        array.push_back(num);
+    }
+    return array;
+}
+
+template<>
+inline std::vector<int8_t> split(std::string &str) {
+    std::vector<int8_t> array;
+    std::stringstream ss(str);
+    auto max = std::numeric_limits<int8_t>::max();
+    auto min = std::numeric_limits<int8_t>::min();
+    int16_t temp;
+    while (ss >> temp) {
+        int8_t num = std::max(std::min(temp, (int16_t)max), (int16_t)min);
+        if (temp > max) {
+            throw std::overflow_error("Read value is greater than int8 maximum.");
+        }
+        else if (temp < min) {
+            throw std::underflow_error("Read value is less than int8 minimum.");
+        }
+        array.push_back(static_cast<int8_t>(num));
     }
     return array;
 }
@@ -779,11 +816,11 @@ std::shared_ptr<SlaveDescription_t> readSlaveDescription(const char *acuDFile) {
                                                 PARSE_NODE_NAME(Dimension)
                                                 if (DimensionNodeName == "Dimension") {
                                                     PARSE_ATTR_INT(Dimension, constant, uint64_t)
-                                                    PARSE_ATTR_INT(Dimension, linkedVr, uint64_t)
+                                                    PARSE_ATTR_INT(Dimension, linkedVR, uint64_t)
                                                     // <xs:assert test="((@constant and not(@linkedVR))
                                                     // or (not(@constant) and @linkedVR))"/>
-                                                    if (!((constant != nullptr && linkedVr == nullptr)
-                                                          || (constant == nullptr && linkedVr != nullptr))) {
+                                                    if (!((constant != nullptr && linkedVR == nullptr)
+                                                          || (constant == nullptr && linkedVR != nullptr))) {
                                                         throw std::invalid_argument("Assert \"((@constant and "
                                                                                     "not(@linkedVR))  or (not(@constant) "
                                                                                     "and @linkedVR))\" violated");
@@ -793,7 +830,7 @@ std::shared_ptr<SlaveDescription_t> readSlaveDescription(const char *acuDFile) {
                                                                 make_Dimension(DimensionType::CONSTANT, *constant));
                                                     } else {
                                                         causality->dimensions.push_back(
-                                                                make_Dimension(DimensionType::LINKED_VR, *linkedVr));
+                                                                make_Dimension(DimensionType::LINKED_VR, *linkedVR));
                                                     }
                                                 }
                                             }
@@ -916,11 +953,11 @@ std::shared_ptr<SlaveDescription_t> readSlaveDescription(const char *acuDFile) {
                                                 PARSE_NODE_NAME(Dimension)
                                                 if (DimensionNodeName == "Dimension") {
                                                     PARSE_ATTR_INT(Dimension, constant, uint64_t)
-                                                    PARSE_ATTR_INT(Dimension, linkedVr, uint64_t)
+                                                    PARSE_ATTR_INT(Dimension, linkedVR, uint64_t)
                                                     // <xs:assert test="((@constant and not(@linkedVR))
                                                     // or (not(@constant) and @linkedVR))"/>
-                                                    if (!((constant != nullptr && linkedVr == nullptr)
-                                                          || (constant == nullptr && linkedVr != nullptr))) {
+                                                    if (!((constant != nullptr && linkedVR == nullptr)
+                                                          || (constant == nullptr && linkedVR != nullptr))) {
                                                         throw std::invalid_argument("Assert \"((@constant and not(@linkedVR)) "
                                                                                     "or (not(@constant) and @linkedVR))\" violated");
                                                     }
@@ -929,7 +966,7 @@ std::shared_ptr<SlaveDescription_t> readSlaveDescription(const char *acuDFile) {
                                                                 make_Dimension(DimensionType::CONSTANT, *constant));
                                                     } else {
                                                         output->dimensions.push_back(
-                                                                make_Dimension(DimensionType::LINKED_VR, *linkedVr));
+                                                                make_Dimension(DimensionType::LINKED_VR, *linkedVR));
                                                     }
                                                 }
                                             }
@@ -1080,6 +1117,9 @@ std::shared_ptr<SlaveDescription_t> readSlaveDescription(const char *acuDFile) {
             v = &variable.Output->dimensions;
         } if(variable.Parameter != nullptr){
             v = &variable.Parameter->dimensions;
+        }
+        if (variable.StructuralParameter != nullptr) {
+            continue;
         }
         for(auto& dimension : *v){
             if(dimension.type == DimensionType::LINKED_VR){

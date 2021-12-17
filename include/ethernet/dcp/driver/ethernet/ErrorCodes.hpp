@@ -39,7 +39,7 @@ static const LogTemplate PDU_RECEIVED = LogTemplate(logId++, LogCategory::DCP_LI
                                              DcpLogLevel::LVL_DEBUG, "Pdu was received with content=%string",
                                              {DcpDataType::string});
 static const LogTemplate PDU_SEND = LogTemplate(logId++, LogCategory::DCP_LIB_ETHERNET,
-                                         DcpLogLevel::LVL_DEBUG, "Pdu was send with content=%string",
+                                         DcpLogLevel::LVL_DEBUG, "Pdu was sent with content=%string",
                                          {DcpDataType::string});
 
 static const LogTemplate NETWORK_PROBLEM = LogTemplate(logId++, LogCategory::DCP_LIB_ETHERNET,

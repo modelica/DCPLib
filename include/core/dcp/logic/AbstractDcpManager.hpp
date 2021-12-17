@@ -12,6 +12,7 @@
 
 #include <cstdint>
 #include <map>
+#include <list>
 
 #include <dcp/logic/DcpManager.hpp>
 #include <dcp/driver/DcpDriver.hpp>
@@ -90,7 +91,7 @@ protected:
      */
     std::map<uint16_t, uint16_t> dataSegNumsIn;
 
-/**
+    /**
     * last seq. id which was send out
     */
     std::map<uint16_t, uint16_t> parameterSegNumsOut;
