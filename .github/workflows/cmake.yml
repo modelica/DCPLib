@@ -70,3 +70,27 @@ jobs:
       
     - name: run struct example
       run: ${{github.workspace}}/example/struc_param_slave/build/struc_param_slave & pid_slave=$! && cd ${{github.workspace}}/example/struc_param_master/build/ && ./struc_param_master  && kill -KILL $pid_slave
+
+    - name: Configure CMake MSD master example
+      run: mkdir ${{github.workspace}}/example/spring_damper_master/build && cmake -B ${{github.workspace}}/example/spring_damper_master/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{github.workspace}}/example/spring_damper_master/      
+
+    - name: Build MSD master example
+      run:  cmake --build ${{github.workspace}}/example/spring_damper_master/build --config ${{env.BUILD_TYPE}}
+      
+    - name: Configure CMake MSD1 slave example
+      run: mkdir ${{github.workspace}}/example/spring_damper_slave1/build && cmake -B ${{github.workspace}}/example/spring_damper_slave1/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{github.workspace}}/example/spring_damper_slave1/
+      
+    - name: Build MSD1 slave example
+      run: cmake --build ${{github.workspace}}/example/spring_damper_slave1/build --config ${{env.BUILD_TYPE}}
+
+    - name: Configure CMake MSD2 slave example
+      run: mkdir ${{github.workspace}}/example/spring_damper_slave2/build && cmake -B ${{github.workspace}}/example/spring_damper_slave2/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{github.workspace}}/example/spring_damper_slave2/
+      
+    - name: Build MSD2 slave example
+      run: cmake --build ${{github.workspace}}/example/spring_damper_slave2/build --config ${{env.BUILD_TYPE}}
+      
+    - name: copy Slave-Description to master build
+      run: cp ${{github.workspace}}/example/spring_damper_master/MSD1-Slave-Description.xml ${{github.workspace}}/example/spring_damper_master/build/ && cp ${{github.workspace}}/example/spring_damper_master/MSD2-Slave-Description.xml ${{github.workspace}}/example/spring_damper_master/build/
+      
+    - name: run MSD example
+      run: ${{github.workspace}}/example/spring_damper_slave1/build/dcp_msd1_slave & ${{github.workspace}}/example/spring_damper_slave2/build/dcp_msd2_slave & cd ${{github.workspace}}/example/spring_damper_master/build/ && ./dcp_msd_master  && pkill dcp_msd1_slave  && pkill dcp_msd2_slave

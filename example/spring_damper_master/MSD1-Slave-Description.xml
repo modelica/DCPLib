@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dcpSlaveDescription dcpMajorVersion="1" dcpMinorVersion="0" dcpSlaveName="dcpslave" uuid="bcb912fe-5e59-11ec-bf63-0242ac130002" variableNamingConvention="flat" >
+	<OpMode>
+		<SoftRealTime/>
+	</OpMode>
+	<TimeRes>
+		<Resolution denominator="10" />
+	</TimeRes>
+	<TransportProtocols>
+		<UDP_IPv4 maxPduSize="65507" >
+			<Control host="127.0.0.1" port="8081" />
+			<DAT_input_output host="" >
+				<AvailablePortRange from="2048" to="65535" />
+			</DAT_input_output>
+			<DAT_parameter host="" >
+				<AvailablePortRange from="2048" to="65535" />
+			</DAT_parameter>
+		</UDP_IPv4>
+	</TransportProtocols>
+	<CapabilityFlags canAcceptConfigPdus="true" canHandleReset="true" canHandleVariableSteps="true" canProvideLogOnRequest="true" canProvideLogOnNotification="true" />
+	<Variables>
+		<Variable name="x" valueReference="1" >
+			<Output>
+				<Float64 start="1 " />
+			</Output>
+		</Variable>
+		<Variable name="v" valueReference="2" >
+			<Output>
+				<Float64 start="0 " />
+			</Output>
+		</Variable>
+		<Variable name="Fe" valueReference="3" >
+			<Input>
+				<Float64 start="0 " />
+			</Input>
+		</Variable>
+	</Variables> 
+	<Log>
+		<Categories>
+			<Category id="1" name="DCP_SLAVE" />
+		</Categories>
+		<Templates>
+			<Template id="1" category="1" level="3" msg="[Time = %float64][step = %uint64 ] : pos = %float64, vel = %float64" />
+		</Templates>
+	</Log> 
+</dcpSlaveDescription>
