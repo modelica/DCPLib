@@ -12,6 +12,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <atomic>
 
 #include "dcp/logic/AbstractDcpManagerSlave.hpp"
 #include <dcp/model/DcpCallbackTypes.hpp>
@@ -58,7 +59,8 @@ public:
     DcpManagerSlave(const SlaveDescription_t &dcpSlaveDescription, DcpDriver driver) : AbstractDcpManagerSlave(
             dcpSlaveDescription),
             mtxInput(1),
-            mtxOutput(1) {
+            mtxOutput(1),
+            semStopping(0) {
         this->driver = driver;
     }
 
@@ -69,6 +71,15 @@ public:
         delete _doStep;
         delete running;
         delete heartbeat;
+    }
+
+    virtual void stopRunning() override {
+        if (state == DcpState::SYNCHRONIZING || state == DcpState::SYNCHRONIZED || state == DcpState::RUNNING) {
+            should_stop = true;
+            if(DcpOpMode::SRT == opMode || DcpOpMode::HRT == opMode) {
+                semStopping.wait();
+            }
+        }
     }
 
     /**
@@ -523,6 +534,9 @@ protected:
     /* Mutex */
     internal::Semaphore mtxInput;
     internal::Semaphore mtxOutput;
+    internal::Semaphore semStopping;
+    std::atomic_bool should_stop{false};
+
     std::mutex mtxHeartbeat;
     std::mutex mtxParam;
     std::mutex mtxLog;
@@ -589,11 +603,11 @@ protected:
      **************************/
 
     virtual void configure() override {
+        should_stop = false;
         lastExecution++;
         if (configuring != NULL) {
             configuring->detach();
             delete configuring;
-
         }
         configuring = new std::thread(&DcpManagerSlave::startConfiguring, this);
     }
@@ -708,6 +722,11 @@ protected:
         Log(COMPUTING_STARTED);
 #endif
 
+        if (should_stop) {
+            semStopping.post();
+            return;
+        }
+
         switch (runLastExitPoint) {
             case DcpState::RUNNING: {
 		    if (asynchronousCallback[DcpCallbackTypes::RUNNING_NRT_STEP]) {
@@ -787,6 +806,11 @@ protected:
 
         uint32_t steps = 1;
 
+        if (should_stop) {
+            semStopping.post();
+            return;
+        }
+
         switch (realtimeState) {
             case DcpState::RUNNING: {
                 if (state == DcpState::RUNNING) {
@@ -819,16 +843,19 @@ protected:
                 break;
             }
             case DcpState::SYNCHRONIZED: {
-                mtxInput.wait();
-                mtxOutput.wait();
+                if (state == DcpState::RUNNING || state == DcpState::SYNCHRONIZED) {
+                    mtxInput.wait();
+                    mtxOutput.wait();
 
-                if (asynchronousCallback[DcpCallbackTypes::SYNCHRONIZED_STEP]) {
-                    std::thread t(synchronizedStepCallback, steps);
-                    t.detach();
-                } else {
-                    synchronizedStepCallback(steps);
-                    std::thread t(&DcpManagerSlave::realtimeStepFinished, this);
-                    t.detach();
+                    if (asynchronousCallback[DcpCallbackTypes::SYNCHRONIZED_STEP]) {
+                        std::thread t(synchronizedStepCallback, steps);
+                        t.detach();
+                    }
+                    else {
+                        synchronizedStepCallback(steps);
+                        std::thread t(&DcpManagerSlave::realtimeStepFinished, this);
+                        t.detach();
+                    }
                 }
                 break;
             }
@@ -856,6 +883,7 @@ protected:
                                                                    * ((double) steps)) * 1000000.0));
         //steps = newSteps;
         std::this_thread::sleep_until(nextCommunication);
+        realtimeState = state;
         startRealtimeStep();
     }
 

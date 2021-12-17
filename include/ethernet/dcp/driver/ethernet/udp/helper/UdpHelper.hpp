@@ -34,7 +34,11 @@ public:
         setLogManager(_logManager);
     }
 
-    ~Socket() {}
+    ~Socket() {
+#if defined(DEBUG)
+        Log(SOCKET_CLOSED, Udp::protocolName, to_string(endpoint));
+#endif
+    }
 
     void send(DcpPdu &msg, asio::ip::udp::endpoint endpoint) {
 #if defined(DEBUG)
@@ -86,7 +90,7 @@ public:
 
     void setup_receive() {
         socket->async_receive_from(asio::buffer(data + 4, maxLength), lastAccess,
-                                   std::bind(&Socket::handle_receive, this,
+                                   std::bind(&Socket::handle_receive, shared_from_this(),
                                              std::placeholders::_1,
                                              std::placeholders::_2));
     }
@@ -108,14 +112,11 @@ public:
 
     void close() {
         //one in asio queue, one existing in driver
-        if(shared_from_this().use_count() == 2){
+        if(shared_from_this().use_count() == 3){
             if (started && socket != nullptr) {
                 socket->close();
                 started = false;
             }
-#if defined(DEBUG)
-            Log(SOCKET_CLOSED, Udp::protocolName, to_string(endpoint));
-#endif
         }
     }
 
