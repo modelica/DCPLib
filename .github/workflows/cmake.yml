@@ -90,8 +90,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/example/spring_damper_slave2/build --config ${{env.BUILD_TYPE}}
       
     - name: copy Slave-Description to master build
-      run: cp ${{github.workspace}}/example/spring_damper_master/MSD1-Slave-Description.xml ${{github.workspace}}/example/spring_damper_master/build/
-      run: cp ${{github.workspace}}/example/spring_damper_master/MSD2-Slave-Description.xml ${{github.workspace}}/example/spring_damper_master/build/
+      run: cp ${{github.workspace}}/example/spring_damper_master/MSD1-Slave-Description.xml ${{github.workspace}}/example/spring_damper_master/build/ && cp ${{github.workspace}}/example/spring_damper_master/MSD2-Slave-Description.xml ${{github.workspace}}/example/spring_damper_master/build/
       
     - name: run MSD example
       run: ${{github.workspace}}/example/spring_damper_slave1/build/dcp_msd1_slave & pid_slave1=$! && ${{github.workspace}}/example/spring_damper_slave2/build/dcp_msd2_slave & pid_slave2=$!  && cd ${{github.workspace}}/example/spring_damper_master/build/ && ./spring_damper_master  && kill -KILL $pid_slave1 && kill -KILL $pid_slave2 
