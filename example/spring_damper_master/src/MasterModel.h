@@ -1,8 +1,8 @@
 /*
  * Master.h
  *
- *  Created on: 25.02.2017
- *      Author: kater
+ *  Created on: 17.12.2021
+ *      Author: cschiffer
  */
 
 #ifndef ACI_EXAMPLE_MASTER_H_
@@ -103,7 +103,7 @@ private:
             manager->CFG_time_res(1, slaveDescription1->TimeRes.resolutions.front().numerator,
                 slaveDescription1->TimeRes.resolutions.front().denominator);
             manager->CFG_source_network_information_UDP(1, 2, asio::ip::address_v4::from_string(
-                *slaveDescription2->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port1);
+                *slaveDescription1>TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port1);
             manager->CFG_target_network_information_UDP(1, 1, asio::ip::address_v4::from_string(
                 *slaveDescription2->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port2);
             numOfCmd[1] = 9;
@@ -124,7 +124,7 @@ private:
             manager->CFG_time_res(2, slaveDescription1->TimeRes.resolutions.front().numerator,
                 slaveDescription1->TimeRes.resolutions.front().denominator);
             manager->CFG_source_network_information_UDP(2, 1, asio::ip::address_v4::from_string(
-                *slaveDescription1->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port2);
+                *slaveDescription2->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port2);
             manager->CFG_target_network_information_UDP(2, 2, asio::ip::address_v4::from_string(
                 *slaveDescription1->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port1);
             numOfCmd[2] = 9;
