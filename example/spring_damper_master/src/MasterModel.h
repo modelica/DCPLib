@@ -103,7 +103,7 @@ private:
             manager->CFG_time_res(1, slaveDescription1->TimeRes.resolutions.front().numerator,
                 slaveDescription1->TimeRes.resolutions.front().denominator);
             manager->CFG_source_network_information_UDP(1, 2, asio::ip::address_v4::from_string(
-                *slaveDescription1>TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port1);
+                *slaveDescription1->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port1);
             manager->CFG_target_network_information_UDP(1, 1, asio::ip::address_v4::from_string(
                 *slaveDescription2->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port2);
             numOfCmd[1] = 9;
