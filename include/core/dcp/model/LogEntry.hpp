@@ -132,11 +132,14 @@ public:
                     offset += 1;
                     break;
                 }
+#if defined(DEBUG) || defined(LOGGING)
                 case DcpDataType::pduType: {
                     value = to_string(*((DcpPduType*)(payload + offset)));
                     offset += 1;
                     break;
                 }
+#endif //defined(DEBUG) || defined(LOGGING)
+
                 case DcpDataType::dataType: {
                     value = to_string(*((DcpDataType*)(payload + offset)));
                     offset += 1;
