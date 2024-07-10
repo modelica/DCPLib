@@ -10,7 +10,9 @@
 #ifndef DCPLIB_UDPDRIVER_H
 #define DCPLIB_UDPDRIVER_H
 
+#ifndef ASIO_STANDALONE
 #define ASIO_STANDALONE
+#endif
 
 #include <dcp/driver/ethernet/udp/helper/UdpHelper.hpp>
 

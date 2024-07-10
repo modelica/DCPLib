@@ -10,7 +10,9 @@
 #ifndef DCPLIB_TCP_DRIVER_H
 #define DCPLIB_TCP_DRIVER_H
 
+#ifndef ASIO_STANDALONE
 #define ASIO_STANDALONE
+#endif
 
 
 #include <dcp/driver/ethernet/tcp/helper/TcpHelper.hpp>
