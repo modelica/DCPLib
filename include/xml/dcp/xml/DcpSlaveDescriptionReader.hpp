@@ -289,36 +289,44 @@ std::shared_ptr<SlaveDescription_t> readSlaveDescription(const char *acuDFile) {
     parser->setValidationSchemaFullChecking(false);
     xercesc::MemBufInputSource dcpAnnotationFile(reinterpret_cast<const XMLByte *>(xsd::dcpAnnotation.c_str()),
                                                  xsd::dcpAnnotation.size(), "dcpAnnotation.xsd");
-    assert(parser->loadGrammar(dcpAnnotationFile, Grammar::SchemaGrammarType, true));
+    auto ret = parser->loadGrammar(dcpAnnotationFile, Grammar::SchemaGrammarType, true);
+    assert(ret);
     xercesc::MemBufInputSource dcpAttributeGroupsFile(
             reinterpret_cast<const XMLByte *>(xsd::dcpAttributeGroups.c_str()), xsd::dcpAttributeGroups.size(),
             "dcpAttributeGroups.xsd");
-    assert(parser->loadGrammar(dcpAttributeGroupsFile, Grammar::SchemaGrammarType, true));
+    ret = parser->loadGrammar(dcpAttributeGroupsFile, Grammar::SchemaGrammarType, true);
+    assert(ret);
     xercesc::MemBufInputSource dcpDataTypesFile(
             reinterpret_cast<const XMLByte *>(xsd::dcpDataTypes.c_str()), xsd::dcpDataTypes.size(),
             "dcpDataTypes.xsd");
-    assert(parser->loadGrammar(dcpDataTypesFile, Grammar::SchemaGrammarType, true));
+    ret = parser->loadGrammar(dcpDataTypesFile, Grammar::SchemaGrammarType, true);
+    assert(ret);
     xercesc::MemBufInputSource dcpTransportProtocolFile(
             reinterpret_cast<const XMLByte *>(xsd::dcpTransportProtocol.c_str()), xsd::dcpTransportProtocol.size(),
             "dcpTransportProtocolTypes.xsd");
-    assert(parser->loadGrammar(dcpTransportProtocolFile, Grammar::SchemaGrammarType, true));
+    ret = parser->loadGrammar(dcpTransportProtocolFile, Grammar::SchemaGrammarType, true);
+    assert(ret);
     xercesc::MemBufInputSource dcpTypeFile(
             reinterpret_cast<const XMLByte *>(xsd::dcpType.c_str()), xsd::dcpType.size(),
             "dcpType.xsd");
-    assert(parser->loadGrammar(dcpTypeFile, Grammar::SchemaGrammarType, true));
+    ret = parser->loadGrammar(dcpTypeFile, Grammar::SchemaGrammarType, true);
+    assert(ret);
     xercesc::MemBufInputSource dcpUnitFile(
             reinterpret_cast<const XMLByte *>(xsd::dcpUnit.c_str()), xsd::dcpUnit.size(),
             "dcpUnit.xsd");
-    assert(parser->loadGrammar(dcpUnitFile, Grammar::SchemaGrammarType, true));
+    ret = parser->loadGrammar(dcpUnitFile, Grammar::SchemaGrammarType, true);
+    assert(ret);
     xercesc::MemBufInputSource dcpVariableFile(
             reinterpret_cast<const XMLByte *>(xsd::dcpVariable.c_str()), xsd::dcpVariable.size(),
             "dcpVariable.xsd");
-    assert(parser->loadGrammar(dcpVariableFile, Grammar::SchemaGrammarType, true));
+    ret = parser->loadGrammar(dcpVariableFile, Grammar::SchemaGrammarType, true);
+    assert(ret);
     xercesc::MemBufInputSource slaveDescriptionFile(
             reinterpret_cast<const XMLByte *>(xsd::slaveDescription.c_str()), xsd::slaveDescription.size(),
             "slaveDescription.xsd");
-    assert(parser->loadGrammar(slaveDescriptionFile, Grammar::SchemaGrammarType, true));
-
+    ret = parser->loadGrammar(slaveDescriptionFile, Grammar::SchemaGrammarType, true);
+    assert(ret);
+    
     try {
         parser->parse(XMLString::transcode(acuDFile));
     } catch (const xercesc::XMLException &toCatch) {
