@@ -311,6 +311,7 @@ namespace slavedescription {
             case DcpTransportProtocol::TCP_IPv4:
                 return slaveDescription.TransportProtocols.TCP_IPv4.get() != nullptr;
         }
+        throw std::runtime_error(std::string("Invalid DcpTransportProtocol encountered: ") + std::to_string(static_cast<uint8_t>(transportProtocol)));
     }
 
 

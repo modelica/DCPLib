@@ -237,6 +237,7 @@ static std::string to_string(Direction dir){
         case Direction::USB_DIR_OUT:
             return "Out";
     }
+    throw std::runtime_error(std::string("Invalid Direction encountered: ") + std::to_string(static_cast<unsigned int>(dir)));
 }
 
 struct DataPipe_t {
@@ -410,6 +411,7 @@ static std::string to_string(DimensionType dim){
         case DimensionType::LINKED_VR:
             return "LINKED_VR";
     }
+    throw std::runtime_error(std::string("Invalid DimensionType encountered: ") + std::to_string(static_cast<unsigned int>(dim)));
 }
 struct Dimension_t {
     DimensionType type;
@@ -431,6 +433,7 @@ static std::string to_string(DependencyKind kind){
         case DependencyKind::LINEAR:
             return "linear";
     }
+    throw std::runtime_error(std::string("Invalid DependencyKind encountered: ") + std::to_string(static_cast<unsigned int>(kind)));
 }
 
 struct Dependency_t {
@@ -901,6 +904,7 @@ static std::string to_string(Variability variability){
         case Variability::CONTINUOUS:
             return "continuous";
     }
+    throw std::runtime_error(std::string("Invalid Variability encountered: ") + std::to_string(static_cast<unsigned int>(variability)));
 }
 
 struct Variable_t {
@@ -993,6 +997,7 @@ static std::string to_string(VariableNamingConvention variableNamingConvention){
         case VariableNamingConvention::STRUCTURED:
             return "structured";
     }
+    throw std::runtime_error(std::string("Invalid VariableNamingConvention encountered: ") + std::to_string(static_cast<uint8_t>(variableNamingConvention)));
 }
 
 struct SlaveDescription_t {
