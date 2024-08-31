@@ -48,7 +48,7 @@ public:
 
     void setString(std::string& str){
         assert(str.size() < pow(2, 32));
-        *((uint32_t*) payload) = str.size();
+        *((uint32_t*) payload) = static_cast<uint32_t>(str.size());
         strcpy(payload + 4, str.c_str());
     }
 

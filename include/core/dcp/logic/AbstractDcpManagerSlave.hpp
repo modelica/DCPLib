@@ -295,7 +295,7 @@ public:
             }
             case DcpPduType::DAT_input_output: {
                 DcpPduDatInputOutput &data = static_cast<DcpPduDatInputOutput &>(msg);
-                int offset = 0;
+                size_t offset = 0;
                 std::map<uint16_t, std::pair<uint64_t, DcpDataType>> vrsToReceive =
                         inputAssignment[data.getDataId()];
                 for (uint16_t i = 0; i < vrsToReceive.size(); i++) {
@@ -321,7 +321,7 @@ public:
             case DcpPduType::DAT_parameter: {
                 DcpPduDatParameter &param = static_cast<DcpPduDatParameter &>(msg);
 
-                int offset = 0;
+                size_t offset = 0;
                 std::map<uint16_t, std::pair<uint64_t, DcpDataType>> vrsToReceive =
                         paramAssignment[param.getParamId()];
                 for (uint16_t i = 0; i < vrsToReceive.size(); i++) {
@@ -335,16 +335,16 @@ public:
                         size_t value;
                         switch (slavedescription::getDataType(slaveDescription, valueReference)) {
                             case DcpDataType::uint8:
-                                value = *values[valueReference]->getValue<uint8_t *>();
+                                value = static_cast<size_t>(*values[valueReference]->getValue<uint8_t *>());
                                 break;
                             case DcpDataType::uint16:
-                                value = *values[valueReference]->getValue<uint16_t *>();
+                                value = static_cast<size_t>(*values[valueReference]->getValue<uint16_t *>());
                                 break;
                             case DcpDataType::uint32:
-                                value = *values[valueReference]->getValue<uint32_t *>();
+                                value = static_cast<size_t>(*values[valueReference]->getValue<uint32_t *>());
                                 break;
                             case DcpDataType::uint64:
-                                value = *values[valueReference]->getValue<uint64_t *>();
+                                value = static_cast<size_t>(*values[valueReference]->getValue<uint64_t *>());
                                 break;
                             default:
                                 //only uint datatypes are allowed for structual parameters
@@ -375,16 +375,16 @@ public:
                     size_t value;
                     switch (slavedescription::getDataType(slaveDescription, valueReference)) {
                         case DcpDataType::uint8:
-                            value = *values[valueReference]->getValue<uint8_t *>();
+                            value = static_cast<size_t>(*values[valueReference]->getValue<uint8_t *>());
                             break;
                         case DcpDataType::uint16:
-                            value = *values[valueReference]->getValue<uint16_t *>();
+                            value = static_cast<size_t>(*values[valueReference]->getValue<uint16_t *>());
                             break;
                         case DcpDataType::uint32:
-                            value = *values[valueReference]->getValue<uint32_t *>();
+                            value = static_cast<size_t>(*values[valueReference]->getValue<uint32_t *>());
                             break;
                         case DcpDataType::uint64:
-                            value = *values[valueReference]->getValue<uint64_t *>();
+                            value = static_cast<size_t>(*values[valueReference]->getValue<uint64_t *>());
                             break;
                         default:
                             //only uint datatypes are allowed for structual parameters
@@ -842,7 +842,7 @@ protected:
                     case DcpDataType::uint8: {
                         if (var.StructuralParameter.get()->Uint8.get()->start.get() != nullptr) {
                             auto &startValues = *var.StructuralParameter.get()->Uint8.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -851,7 +851,7 @@ protected:
                     case DcpDataType::uint16: {
                         if (var.StructuralParameter.get()->Uint16.get()->start.get() != nullptr) {
                             auto &startValues = *var.StructuralParameter.get()->Uint16.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -860,7 +860,7 @@ protected:
                     case DcpDataType::uint32: {
                         if (var.StructuralParameter.get()->Uint32.get()->start.get() != nullptr) {
                             auto &startValues = *var.StructuralParameter.get()->Uint32.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -869,7 +869,7 @@ protected:
                     case DcpDataType::uint64: {
                         if (var.StructuralParameter.get()->Uint64.get()->start.get() != nullptr) {
                             auto &startValues = *var.StructuralParameter.get()->Uint64.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -916,23 +916,23 @@ protected:
                     for (auto const &dim: var.Input->dimensions) {
                         size_t dimVal;
                         if (dim.type == DimensionType::CONSTANT) {
-                            dimVal = dim.value;
+                            dimVal = static_cast<size_t>(dim.value);
                         } else if (dim.type == DimensionType::LINKED_VR) {
-                            size_t linkedVr = dim.value;
+                            size_t linkedVr = static_cast<size_t>(dim.value);
                             MultiDimValue *mdv = values[linkedVr];
                             DcpDataType dataType = mdv->getDataType();
                             switch (dataType) {
                                 case DcpDataType::uint8:
-                                    dimVal = *mdv->getValue<uint8_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint8_t *>());
                                     break;
                                 case DcpDataType::uint16:
-                                    dimVal = *mdv->getValue<uint16_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint16_t *>());
                                     break;
                                 case DcpDataType::uint32:
-                                    dimVal = *mdv->getValue<uint32_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint32_t *>());
                                     break;
                                 case DcpDataType::uint64:
-                                    dimVal = *mdv->getValue<uint64_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint64_t *>());
                                     break;
                                 default:
                                     //only uint datatypes are allowed for dimensions
@@ -955,7 +955,7 @@ protected:
                     case DcpDataType::int8: {
                         if (var.Input.get()->Int8.get()->start.get() != nullptr) {
                             auto &startValues = *var.Input.get()->Int8.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -964,7 +964,7 @@ protected:
                     case DcpDataType::int16: {
                         if (var.Input.get()->Int16.get()->start.get() != nullptr) {
                             auto &startValues = *var.Input.get()->Int16.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -973,7 +973,7 @@ protected:
                     case DcpDataType::int32: {
                         if (var.Input.get()->Int32.get()->start.get() != nullptr) {
                             auto &startValues = *var.Input.get()->Int32.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -982,7 +982,7 @@ protected:
                     case DcpDataType::int64: {
                         if (var.Input.get()->Int64.get()->start.get() != nullptr) {
                             auto &startValues = *var.Input.get()->Int64.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -991,7 +991,7 @@ protected:
                     case DcpDataType::uint8: {
                         if (var.Input.get()->Uint8.get()->start.get() != nullptr) {
                             auto &startValues = *var.Input.get()->Uint8.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1000,7 +1000,7 @@ protected:
                     case DcpDataType::uint16: {
                         if (var.Input.get()->Uint16.get()->start.get() != nullptr) {
                             auto &startValues = *var.Input.get()->Uint16.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1009,7 +1009,7 @@ protected:
                     case DcpDataType::uint32: {
                         if (var.Input.get()->Uint32.get()->start.get() != nullptr) {
                             auto &startValues = *var.Input.get()->Uint32.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1018,7 +1018,7 @@ protected:
                     case DcpDataType::uint64: {
                         if (var.Input.get()->Uint64.get()->start.get() != nullptr) {
                             auto &startValues = *var.Input.get()->Uint64.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1027,7 +1027,7 @@ protected:
                     case DcpDataType::float32: {
                         if (var.Input.get()->Float32.get()->start.get() != nullptr) {
                             auto &startValues = *var.Input.get()->Float32.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1036,7 +1036,7 @@ protected:
                     case DcpDataType::float64: {
                         if (var.Input.get()->Float64.get()->start.get() != nullptr) {
                             auto &startValues = *var.Input.get()->Float64.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1045,7 +1045,7 @@ protected:
                     case DcpDataType::string: {
                         if (var.Input.get()->String.get()->start.get() != nullptr) {
                             std::shared_ptr<std::string> startValue = var.Input.get()->String.get()->start;
-                            DcpString startString(baseSize - 4);
+                            DcpString startString(static_cast<uint32_t>(baseSize - 4));
                             startString.setString(*startValue);
                             values[valueReference]->update((uint8_t *) startString.getPayload(), 0, DcpDataType::string);
                         }
@@ -1054,7 +1054,7 @@ protected:
                     case DcpDataType::binary: {
                         if (var.Input.get()->Binary.get()->start.get() != nullptr) {
                             std::shared_ptr<BinaryStartValue> startValue = var.Input.get()->Binary.get()->start;
-                            DcpBinary startBinary(startValue->length, startValue->value, baseSize);
+                            DcpBinary startBinary(startValue->length, startValue->value, static_cast<uint32_t>(baseSize - 4));
                             values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                         }
                         break;
@@ -1090,23 +1090,23 @@ protected:
                     for (auto const &dim: var.Output->dimensions) {
                         size_t dimVal;
                         if (dim.type == DimensionType::CONSTANT) {
-                            dimVal = dim.value;
+                            dimVal = static_cast<size_t>(dim.value);
                         } else if (dim.type == DimensionType::LINKED_VR) {
-                            size_t linkedVr = dim.value;
+                            size_t linkedVr = static_cast<size_t>(dim.value);
                             MultiDimValue *mdv = values[linkedVr];
                             DcpDataType dataType = mdv->getDataType();
                             switch (dataType) {
                                 case DcpDataType::uint8:
-                                    dimVal = *mdv->getValue<uint8_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint8_t *>());
                                     break;
                                 case DcpDataType::uint16:
-                                    dimVal = *mdv->getValue<uint16_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint16_t *>());
                                     break;
                                 case DcpDataType::uint32:
-                                    dimVal = *mdv->getValue<uint32_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint32_t *>());
                                     break;
                                 case DcpDataType::uint64:
-                                    dimVal = *mdv->getValue<uint64_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint64_t *>());
                                     break;
                                 default:
                                     //only uint datatypes are allowed for dimensions
@@ -1127,7 +1127,7 @@ protected:
                     case DcpDataType::int8: {
                         if (var.Output.get()->Int8.get()->start.get() != nullptr) {
                             auto &startValues = *var.Output.get()->Int8.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1136,7 +1136,7 @@ protected:
                     case DcpDataType::int16: {
                         if (var.Output.get()->Int16.get()->start.get() != nullptr) {
                             auto &startValues = *var.Output.get()->Int16.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1145,7 +1145,7 @@ protected:
                     case DcpDataType::int32: {
                         if (var.Output.get()->Int32.get()->start.get() != nullptr) {
                             auto &startValues = *var.Output.get()->Int32.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1154,7 +1154,7 @@ protected:
                     case DcpDataType::int64: {
                         if (var.Output.get()->Int64.get()->start.get() != nullptr) {
                             auto &startValues = *var.Output.get()->Int64.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1163,7 +1163,7 @@ protected:
                     case DcpDataType::uint8: {
                         if (var.Output.get()->Uint8.get()->start.get() != nullptr) {
                             auto &startValues = *var.Output.get()->Uint8.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
 
@@ -1173,7 +1173,7 @@ protected:
                     case DcpDataType::uint16: {
                         if (var.Output.get()->Uint16.get()->start.get() != nullptr) {
                             auto &startValues = *var.Output.get()->Uint16.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1182,7 +1182,7 @@ protected:
                     case DcpDataType::uint32: {
                         if (var.Output.get()->Uint32.get()->start.get() != nullptr) {
                             auto &startValues = *var.Output.get()->Uint32.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1191,7 +1191,7 @@ protected:
                     case DcpDataType::uint64: {
                         if (var.Output.get()->Uint64.get()->start.get() != nullptr) {
                             auto &startValues = *var.Output.get()->Uint64.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1200,7 +1200,7 @@ protected:
                     case DcpDataType::float32: {
                         if (var.Output.get()->Float32.get()->start.get() != nullptr) {
                             auto &startValues = *var.Output.get()->Float32.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1209,7 +1209,7 @@ protected:
                     case DcpDataType::float64: {
                         if (var.Output.get()->Float64.get()->start.get() != nullptr) {
                             auto &startValues = *var.Output.get()->Float64.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1218,7 +1218,7 @@ protected:
                     case DcpDataType::string: {
                         if (var.Output.get()->String.get()->start.get() != nullptr) {
                             std::shared_ptr<std::string> startValue = var.Output.get()->String.get()->start;
-                            DcpString startString(baseSize - 4);
+                            DcpString startString(static_cast<uint32_t>(baseSize - 4));
                             startString.setString(*startValue);
                             values[valueReference]->update((uint8_t *) startString.getPayload(), 0, DcpDataType::string);
                         }
@@ -1227,7 +1227,7 @@ protected:
                     case DcpDataType::binary: {
                         if (var.Output.get()->Binary.get()->start.get() != nullptr) {
                             std::shared_ptr<BinaryStartValue> startValue = var.Output.get()->Binary.get()->start;
-                            DcpBinary startBinary(startValue->length, startValue->value, baseSize);
+                            DcpBinary startBinary(startValue->length, startValue->value, static_cast<uint32_t>(baseSize - 4));
                             values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                         }
                         break;
@@ -1263,23 +1263,23 @@ protected:
                     for (auto const &dim: var.Parameter->dimensions) {
                         size_t dimVal;
                         if (dim.type == DimensionType::CONSTANT) {
-                            dimVal = dim.value;
+                            dimVal = static_cast<size_t>(dim.value);
                         } else if (dim.type == DimensionType::LINKED_VR) {
-                            size_t linkedVr = dim.value;
+                            size_t linkedVr = static_cast<size_t>(dim.value);
                             MultiDimValue *mdv = values[linkedVr];
                             DcpDataType dataType = mdv->getDataType();
                             switch (dataType) {
                                 case DcpDataType::uint8:
-                                    dimVal = *mdv->getValue<uint8_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint8_t *>());
                                     break;
                                 case DcpDataType::uint16:
-                                    dimVal = *mdv->getValue<uint16_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint16_t *>());
                                     break;
                                 case DcpDataType::uint32:
-                                    dimVal = *mdv->getValue<uint32_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint32_t *>());
                                     break;
                                 case DcpDataType::uint64:
-                                    dimVal = *mdv->getValue<uint64_t *>();
+                                    dimVal = static_cast<size_t>(*mdv->getValue<uint64_t *>());
                                     break;
                                 default:
                                     //only uint datatypes are allowed for dimensions
@@ -1300,7 +1300,7 @@ protected:
                     case DcpDataType::int8: {
                         if (var.Parameter.get()->Int8.get()->start.get() != nullptr) {
                             auto &startValues = *var.Parameter.get()->Int8.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1309,7 +1309,7 @@ protected:
                     case DcpDataType::int16: {
                         if (var.Parameter.get()->Int16.get()->start.get() != nullptr) {
                             auto &startValues = *var.Parameter.get()->Int16.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1318,7 +1318,7 @@ protected:
                     case DcpDataType::int32: {
                         if (var.Parameter.get()->Int32.get()->start.get() != nullptr) {
                             auto &startValues = *var.Parameter.get()->Int32.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1327,7 +1327,7 @@ protected:
                     case DcpDataType::int64: {
                         if (var.Parameter.get()->Int64.get()->start.get() != nullptr) {
                             auto &startValues = *var.Parameter.get()->Int64.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1336,7 +1336,7 @@ protected:
                     case DcpDataType::uint8: {
                         if (var.Parameter.get()->Uint8.get()->start.get() != nullptr) {
                             auto &startValues = *var.Parameter.get()->Uint8.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1345,7 +1345,7 @@ protected:
                     case DcpDataType::uint16: {
                         if (var.Parameter.get()->Uint16.get()->start.get() != nullptr) {
                             auto &startValues = *var.Parameter.get()->Uint16.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1354,7 +1354,7 @@ protected:
                     case DcpDataType::uint32: {
                         if (var.Parameter.get()->Uint32.get()->start.get() != nullptr) {
                             auto &startValues = *var.Parameter.get()->Uint32.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1363,7 +1363,7 @@ protected:
                     case DcpDataType::uint64: {
                         if (var.Parameter.get()->Uint64.get()->start.get() != nullptr) {
                             auto &startValues = *var.Parameter.get()->Uint64.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1372,7 +1372,7 @@ protected:
                     case DcpDataType::float32: {
                         if (var.Parameter.get()->Float32.get()->start.get() != nullptr) {
                             auto &startValues = *var.Parameter.get()->Float32.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1381,7 +1381,7 @@ protected:
                     case DcpDataType::float64: {
                         if (var.Parameter.get()->Float64.get()->start.get() != nullptr) {
                             auto &startValues = *var.Parameter.get()->Float64.get()->start;
-                            for (int i = 0; i < startValues.size(); i++) {
+                            for (size_t i = 0; i < startValues.size(); i++) {
                                 values[valueReference]->updateValue(i, dataType, startValues[i]);
                             }
                         }
@@ -1390,7 +1390,7 @@ protected:
                     case DcpDataType::string: {
                         if (var.Parameter.get()->String.get()->start.get() != nullptr) {
                             std::shared_ptr<std::string> startValue = var.Parameter.get()->String.get()->start;
-                            DcpString startString(baseSize - 4);
+                            DcpString startString(static_cast<uint32_t>(baseSize - 4));
                             startString.setString(*startValue);
                             values[valueReference]->update((uint8_t *) startString.getPayload(), 0, DcpDataType::string);
                         }
@@ -1399,7 +1399,7 @@ protected:
                     case DcpDataType::binary: {
                         if (var.Parameter.get()->Binary.get()->start.get() != nullptr) {
                             std::shared_ptr<BinaryStartValue> startValue = var.Parameter.get()->Binary.get()->start;
-                            DcpBinary startBinary(startValue->length, startValue->value, baseSize);
+                            DcpBinary startBinary(startValue->length, startValue->value, static_cast<uint32_t>(baseSize - 4));
                             values[valueReference]->update(startBinary.getPayload(), 0, DcpDataType::binary);
                         }
                         break;
