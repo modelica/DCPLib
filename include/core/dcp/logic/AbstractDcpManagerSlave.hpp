@@ -64,6 +64,9 @@ struct Payload {
     size_t size;
 };
 
+// Previously this was just 4294967295, but this would create an overflow 
+// on 32 bit systems when 4 is added later. So we reduce it by 4.
+#define DCP_MAX_BASE_SIZE (4294967295 - 4)
 
 /**
  * Basic Logic for a DCP slave
@@ -895,14 +898,14 @@ protected:
                         if (var.Input.get()->Binary.get()->maxSize != nullptr) {
                             baseSize = *var.Input.get()->Binary.get()->maxSize;
                         } else {
-                            baseSize = 4294967295 + 4;
+                            baseSize = DCP_MAX_BASE_SIZE + 4;
                         }
                         break;
                     case DcpDataType::string:
                         if (var.Input.get()->String.get()->maxSize != nullptr) {
                             baseSize = *var.Input.get()->String.get()->maxSize;
                         } else {
-                            baseSize = 4294967295 + 4;
+                            baseSize = DCP_MAX_BASE_SIZE + 4;
                         }
                         break;
                     default:
@@ -1069,14 +1072,14 @@ protected:
                         if (var.Output.get()->Binary.get()->maxSize != nullptr) {
                             baseSize = *var.Output.get()->Binary.get()->maxSize;
                         } else {
-                            baseSize = 4294967295 + 4;
+                            baseSize = DCP_MAX_BASE_SIZE + 4;
                         }
                         break;
                     case DcpDataType::string:
                         if (var.Output.get()->String.get()->maxSize != nullptr) {
                             baseSize = *var.Output.get()->String.get()->maxSize;
                         } else {
-                            baseSize = 4294967295 + 4;
+                            baseSize = DCP_MAX_BASE_SIZE + 4;
                         }
                         break;
                     default:
@@ -1242,14 +1245,14 @@ protected:
                         if (var.Parameter.get()->Binary.get()->maxSize != nullptr) {
                             baseSize = *var.Parameter.get()->Binary.get()->maxSize;
                         } else {
-                            baseSize = 4294967295 + 4;
+                            baseSize = DCP_MAX_BASE_SIZE + 4;
                         }
 
                     case DcpDataType::string:
                         if (var.Parameter.get()->String.get()->maxSize != nullptr) {
                             baseSize = *var.Parameter.get()->String.get()->maxSize;
                         } else {
-                            baseSize = 4294967295 + 4;
+                            baseSize = DCP_MAX_BASE_SIZE + 4;
                         }
                         break;
                     default:
