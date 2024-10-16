@@ -19,6 +19,7 @@
 #include <dcp/model/DcpTypes.hpp>
 #include <dcp/model/constant/DcpState.hpp>
 #include <dcp/model/constant/DcpOpMode.hpp>
+#include <dcp/model/constant/DcpPduType.hpp>
 
 class LogEntry {
 public:
