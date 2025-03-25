@@ -26,4 +26,11 @@ file(GLOB_RECURSE dcpmaster_src_files src/*.cpp src/*.h )
 add_executable(dcpmaster ${dcpmaster_src_files})
 target_link_libraries(dcpmaster DCPLib::Ethernet DCPLib::Master DCPLib::Xml)
 
+add_custom_command(TARGET dcpmaster POST_BUILD
+  COMMAND "${CMAKE_COMMAND}" -E copy
+    ${CMAKE_SOURCE_DIR}/Example-Slave-Description.xml
+    $<TARGET_FILE_DIR:dcpmaster>
+  COMMENT "Copied description XML file."
+)
+
 install(TARGETS dcpmaster DESTINATION bin)

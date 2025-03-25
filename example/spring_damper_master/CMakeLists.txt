@@ -26,4 +26,14 @@ file(GLOB_RECURSE dcp_msd_master_src_files src/*.cpp src/*.h )
 add_executable(dcp_msd_master ${dcp_msd_master_src_files})
 target_link_libraries(dcp_msd_master DCPLib::Ethernet DCPLib::Master DCPLib::Xml)
 
+add_custom_command(TARGET dcp_msd_master POST_BUILD
+  COMMAND "${CMAKE_COMMAND}" -E copy
+    ${CMAKE_SOURCE_DIR}/MSD1-Slave-Description.xml
+    $<TARGET_FILE_DIR:dcp_msd_master>
+  COMMAND "${CMAKE_COMMAND}" -E copy
+    ${CMAKE_SOURCE_DIR}/MSD2-Slave-Description.xml
+    $<TARGET_FILE_DIR:dcp_msd_master>
+  COMMENT "Copied description XML file."
+)
+
 install(TARGETS dcp_msd_master DESTINATION bin)
