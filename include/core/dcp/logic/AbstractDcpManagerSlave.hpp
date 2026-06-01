@@ -75,6 +75,7 @@ public:
 
 
     ~AbstractDcpManagerSlave() {
+        delete[] logRspBuffer;
         for (auto const &entry : values) {
             delete entry.second;
         }
