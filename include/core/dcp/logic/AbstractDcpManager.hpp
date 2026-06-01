@@ -101,7 +101,7 @@ protected:
     std::map<uint16_t, uint16_t> parameterSegNumsIn;
 
     std::vector<std::function<void(const LogEntry &)>> logListeners;
-    bool generateLogString;
+    bool generateLogString = false;
 
     uint8_t dcpId;
     uint8_t masterId;
