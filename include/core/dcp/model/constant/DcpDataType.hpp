@@ -10,6 +10,7 @@
 #ifndef DCPLIB_DCPDATATYPE_HPP
 #define DCPLIB_DCPDATATYPE_HPP
 
+#include <cstdint>
 #include <string>
 #include <sstream>
 
