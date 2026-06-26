@@ -26,4 +26,11 @@ file(GLOB_RECURSE struc_param_master_src_files src/*.cpp src/*.h )
 add_executable(struc_param_master ${struc_param_master_src_files})
 target_link_libraries(struc_param_master DCPLib::Ethernet DCPLib::Master DCPLib::Xml)
 
+add_custom_command(TARGET struc_param_master POST_BUILD
+  COMMAND "${CMAKE_COMMAND}" -E copy
+    ${CMAKE_SOURCE_DIR}/StrucParam-Slave-Description.xml
+    $<TARGET_FILE_DIR:struc_param_master>
+  COMMENT "Copied description XML file."
+)
+
 install(TARGETS struc_param_master DESTINATION bin)

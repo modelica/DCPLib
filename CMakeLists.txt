@@ -40,7 +40,12 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/core DESTINATION include/DCPLib)
 
 if(BUILD_ALL OR BUILD_ETHERNET)
     find_package(Threads REQUIRED)
-	find_package(ASIO REQUIRED )
+    if(WIN32)
+	    find_package(asio REQUIRED )
+    else(WIN32)
+	    find_package(ASIO REQUIRED )
+    endif(WIN32)
+
 
     ##dcplib ethernet
     add_library(Ethernet INTERFACE)
@@ -165,21 +170,30 @@ if(BUILD_ALL OR BUILD_XML)
 endif(BUILD_ALL OR BUILD_XML)
 
 if(BUILD_ALL OR BUILD_ZIP)
-	find_package(Zip REQUIRED)
+    set(ziplib_name "")
+    set(ziplib_target "")
+    if(WIN32)
+        set(ziplib_name "libzip")
+        set(ziplib_target "libzip::zip")
+    else(WIN32)
+        set(ziplib_name "Zip")
+        set(ziplib_target "ZIP::ZIP")
+    endif(WIN32)
 
-    add_library(Zip INTERFACE)
-    add_library(DCPLib::Zip ALIAS Zip)
+    find_package(${ziplib_name} REQUIRED)
+    add_library(${ziplib_name} INTERFACE)
+    add_library(DCPLib::Zip ALIAS ${ziplib_name})
 
-    target_link_libraries(Zip INTERFACE DCPLib::Xml ZIP::ZIP)
+    target_link_libraries(${ziplib_name} INTERFACE DCPLib::Xml ${ziplib_target})
 
-    target_include_directories(Zip INTERFACE
+    target_include_directories(${ziplib_name} INTERFACE
             $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/zip>
             $<INSTALL_INTERFACE:include/DCPLib/zip>
             )
 
-    install(TARGETS Zip
+    install(TARGETS ${ziplib_name}
             EXPORT DCPLib-targets
-            COMPONENT Zip
+            COMPONENT ${ziplib_name}
             ARCHIVE DESTINATION lib
             LIBRARY DESTINATION lib
             RUNTIME DESTINATION bin)
