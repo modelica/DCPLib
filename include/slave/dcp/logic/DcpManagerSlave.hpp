@@ -65,21 +65,37 @@ public:
     }
 
     ~DcpManagerSlave() {
-        if (initializing && initializing->joinable()) initializing->join();
+        if (initializing && initializing->joinable()) {
+            initializing->join();
+        }
         delete initializing;
-        if (configuring && configuring->joinable()) configuring->join();
+        if (configuring && configuring->joinable()) {
+            configuring->join();
+        }
         delete configuring;
-        if (preparing && preparing->joinable()) preparing->join();
+        if (preparing && preparing->joinable()) {
+            preparing->join();
+        }
         delete preparing;
-        if (stopping && stopping->joinable()) stopping->join();
+        if (stopping && stopping->joinable()) {
+            stopping->join();
+        }
         delete stopping;
-        if (synchronizing && synchronizing->joinable()) synchronizing->join();
+        if (synchronizing && synchronizing->joinable()) {
+            synchronizing->join();
+        }
         delete synchronizing;
-        if (_doStep && _doStep->joinable()) _doStep->join();
+        if (_doStep && _doStep->joinable()) {
+            _doStep->join();
+        }
         delete _doStep;
-        if (running && running->joinable()) running->join();
+        if (running && running->joinable()) {
+            running->join();
+        }
         delete running;
-        if (heartbeat && heartbeat->joinable()) heartbeat->join();
+        if (heartbeat && heartbeat->joinable()) {
+            heartbeat->join();
+        }
         delete heartbeat;
     }
 
