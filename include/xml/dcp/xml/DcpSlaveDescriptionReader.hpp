@@ -89,9 +89,9 @@ inline std::vector<int8_t> split(std::string &str) {
 static inline std::shared_ptr<BinaryStartValue> convertToBinary(std::string binaryStr){
 
     std::shared_ptr<BinaryStartValue> startValue = std::make_shared<BinaryStartValue>();
-    startValue->length = binaryStr.length() / 2;
+    startValue->length = static_cast<uint32_t>(binaryStr.length() / 2);
     startValue->value = new uint8_t[startValue->length];
-    for(int i = 0; i < binaryStr.length() - 1; i = i + 2){
+    for(size_t i = 0; i < binaryStr.length() - 1; i = i + 2){
         char first = binaryStr.at(i);
         char second = binaryStr.at(i+1);
         uint8_t b = char2int(first) * 16 + char2int(second);
