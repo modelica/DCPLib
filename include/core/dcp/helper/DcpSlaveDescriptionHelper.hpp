@@ -34,7 +34,7 @@ namespace slavedescription {
         return nullptr;
     }
 
-    inline const bool inputExists(const SlaveDescription_t &slaveDescription, const uint64_t vr) {
+    inline bool inputExists(const SlaveDescription_t &slaveDescription, const uint64_t vr) {
         try {
             return getInput(slaveDescription, vr) != nullptr;
         } catch (...) {
@@ -52,7 +52,7 @@ namespace slavedescription {
 
     }
 
-    inline const bool outputExists(const SlaveDescription_t &slaveDescription, const uint64_t vr) {
+    inline bool outputExists(const SlaveDescription_t &slaveDescription, const uint64_t vr) {
         try {
             return getOutput(slaveDescription, vr) != nullptr;
         } catch (...) {
@@ -69,7 +69,7 @@ namespace slavedescription {
         return nullptr;
     }
 
-    inline const bool parameterExists(const SlaveDescription_t &slaveDescription, const uint64_t vr) {
+    inline bool parameterExists(const SlaveDescription_t &slaveDescription, const uint64_t vr) {
         try {
             return getParameter(slaveDescription, vr) != nullptr;
         } catch (...) {
@@ -87,7 +87,7 @@ namespace slavedescription {
         return nullptr;
     }
 
-    inline const bool structuralParameterExists(const SlaveDescription_t &slaveDescription, const uint64_t vr) {
+    inline bool structuralParameterExists(const SlaveDescription_t &slaveDescription, const uint64_t vr) {
         try {
             return getStructuralParameter(slaveDescription, vr) != nullptr;
         } catch (...) {
@@ -96,7 +96,7 @@ namespace slavedescription {
         return false;
     }
 
-    inline const DcpDataType getDataType(const SlaveDescription_t &slaveDescription, const uint64_t vr) {
+    inline DcpDataType getDataType(const SlaveDescription_t &slaveDescription, const uint64_t vr) {
         const Variable_t *varP = getVariable(slaveDescription, vr);
         if(varP == nullptr){
             return DcpDataType::uint8;
@@ -201,7 +201,7 @@ namespace slavedescription {
         return DcpDataType::uint8;
     }
 
-    inline const bool
+    inline bool
     isTimeResolutionSupported(const SlaveDescription_t &slaveDescription, const uint32_t numerator,
                               const uint32_t denominator) {
         if (numerator == 0 && denominator == 0) {
@@ -232,7 +232,7 @@ namespace slavedescription {
         return false;
     }
 
-    inline const std::string supportedTimeResolutions(const SlaveDescription_t &slaveDescription) {
+    inline std::string supportedTimeResolutions(const SlaveDescription_t &slaveDescription) {
         std::string str = "(";
         for (auto const &tr : slaveDescription.TimeRes.resolutions) {
             str +=
@@ -250,7 +250,7 @@ namespace slavedescription {
         return str;
     }
 
-    inline const bool
+    inline bool
     isStepsSupported(const SlaveDescription_t &slaveDescription, const Output_t &output, const uint32_t steps) {
         if (output.fixedSteps) {
             return steps == output.defaultSteps;
@@ -260,7 +260,7 @@ namespace slavedescription {
     }
 
 
-    inline const bool isStepsSupportedNRT(const SlaveDescription_t &slaveDescription, const uint32_t steps) {
+    inline bool isStepsSupportedNRT(const SlaveDescription_t &slaveDescription, const uint32_t steps) {
         std::shared_ptr<NonRealTime_t> nonRealTime = slaveDescription.OpMode.NonRealTime;
         if (nonRealTime != nullptr) {
             if (nonRealTime->fixedSteps) {
@@ -272,7 +272,7 @@ namespace slavedescription {
         return false;
     }
 
-    inline const std::string supportedStepsNRT(const SlaveDescription_t &slaveDescription) {
+    inline std::string supportedStepsNRT(const SlaveDescription_t &slaveDescription) {
         std::shared_ptr<NonRealTime_t> nonRealTime = slaveDescription.OpMode.NonRealTime;
         if (nonRealTime != nullptr) {
             if (nonRealTime->fixedSteps) {
@@ -286,7 +286,7 @@ namespace slavedescription {
     }
 
 
-    inline const bool isOpModeSupported(const SlaveDescription_t &slaveDescription, const DcpOpMode opMode) {
+    inline bool isOpModeSupported(const SlaveDescription_t &slaveDescription, const DcpOpMode opMode) {
         if (slaveDescription.OpMode.HardRealTime != nullptr && opMode == DcpOpMode::HRT) {
             return true;
         } else if (slaveDescription.OpMode.SoftRealTime != nullptr&& opMode == DcpOpMode::SRT) {
@@ -297,7 +297,7 @@ namespace slavedescription {
         return false;
     }
 
-    inline const bool
+    inline bool
     isTransportProtocolSupported(const SlaveDescription_t &slaveDescription, DcpTransportProtocol transportProtocol) {
         switch (transportProtocol) {
             case DcpTransportProtocol::UDP_IPv4:
@@ -315,7 +315,7 @@ namespace slavedescription {
     }
 
 
-    inline const bool
+    inline bool
     isEthernetPortSupportedForInputOutput(const std::shared_ptr<Ethernet_t> &protocol, std::shared_ptr<DAT_t> type,
                                           const SlaveDescription_t &slaveDescription, uint16_t port) {
         if (protocol.get() != nullptr) {
@@ -335,7 +335,7 @@ namespace slavedescription {
         return false;
     }
 
-    inline const std::string
+    inline std::string
     supportedEthernetPorts(const std::shared_ptr<Ethernet_t> &protocol, std::shared_ptr<DAT_t> type,
                            const SlaveDescription_t &slaveDescription) {
         std::string str = "(";
@@ -355,7 +355,7 @@ namespace slavedescription {
         return str;
     }
 
-    inline const bool isUDPPortSupportedForInputOutput(const SlaveDescription_t &slaveDescription, uint16_t port) {
+    inline bool isUDPPortSupportedForInputOutput(const SlaveDescription_t &slaveDescription, uint16_t port) {
         if (slaveDescription.TransportProtocols.UDP_IPv4.get() != nullptr) {
             return isEthernetPortSupportedForInputOutput(slaveDescription.TransportProtocols.UDP_IPv4,
                                                          slaveDescription.TransportProtocols.UDP_IPv4->DAT_input_output,
@@ -365,7 +365,7 @@ namespace slavedescription {
     }
 
 
-    inline const bool isTCPPortSupportedForInputOutput(const SlaveDescription_t &slaveDescription, uint16_t port) {
+    inline bool isTCPPortSupportedForInputOutput(const SlaveDescription_t &slaveDescription, uint16_t port) {
         if (slaveDescription.TransportProtocols.TCP_IPv4.get() != nullptr) {
             return isEthernetPortSupportedForInputOutput(slaveDescription.TransportProtocols.TCP_IPv4,
                                                          slaveDescription.TransportProtocols.TCP_IPv4->DAT_input_output,
@@ -375,7 +375,7 @@ namespace slavedescription {
     }
 
 
-    inline const std::string supportedUdpPorts(const SlaveDescription_t &slaveDescription) {
+    inline std::string supportedUdpPorts(const SlaveDescription_t &slaveDescription) {
         if (slaveDescription.TransportProtocols.UDP_IPv4.get() != nullptr) {
             return supportedEthernetPorts(slaveDescription.TransportProtocols.UDP_IPv4,
                                           slaveDescription.TransportProtocols.UDP_IPv4->DAT_input_output,
@@ -384,7 +384,7 @@ namespace slavedescription {
         return "";
     }
 
-    inline const std::string supportedTCPPorts(const SlaveDescription_t &slaveDescription) {
+    inline std::string supportedTCPPorts(const SlaveDescription_t &slaveDescription) {
         if (slaveDescription.TransportProtocols.TCP_IPv4.get() != nullptr) {
             return supportedEthernetPorts(slaveDescription.TransportProtocols.TCP_IPv4,
                                           slaveDescription.TransportProtocols.TCP_IPv4->DAT_input_output,
@@ -394,7 +394,7 @@ namespace slavedescription {
     }
 
 
-    inline const bool isUDPPortSupportedForParameter(const SlaveDescription_t &slaveDescription, uint16_t port) {
+    inline bool isUDPPortSupportedForParameter(const SlaveDescription_t &slaveDescription, uint16_t port) {
         if (slaveDescription.TransportProtocols.UDP_IPv4.get() != nullptr) {
             return isEthernetPortSupportedForInputOutput(slaveDescription.TransportProtocols.UDP_IPv4,
                                                          slaveDescription.TransportProtocols.UDP_IPv4->DAT_parameter,
@@ -403,7 +403,7 @@ namespace slavedescription {
         return false;
     }
 
-    inline const bool isTCPPortSupportedForParameter(const SlaveDescription_t &slaveDescription, uint16_t port) {
+    inline bool isTCPPortSupportedForParameter(const SlaveDescription_t &slaveDescription, uint16_t port) {
         if (slaveDescription.TransportProtocols.TCP_IPv4.get() != nullptr) {
             return isEthernetPortSupportedForInputOutput(slaveDescription.TransportProtocols.TCP_IPv4,
                                                          slaveDescription.TransportProtocols.TCP_IPv4->DAT_parameter,
@@ -413,7 +413,7 @@ namespace slavedescription {
     }
 
 
-    inline const std::string supportedUdpPortsParameter(const SlaveDescription_t &slaveDescription) {
+    inline std::string supportedUdpPortsParameter(const SlaveDescription_t &slaveDescription) {
         if (slaveDescription.TransportProtocols.UDP_IPv4.get() != nullptr) {
             return supportedEthernetPorts(slaveDescription.TransportProtocols.UDP_IPv4,
                                           slaveDescription.TransportProtocols.UDP_IPv4->DAT_parameter,
@@ -422,7 +422,7 @@ namespace slavedescription {
         return "";
     }
 
-    inline const std::string supportedTCPPortsParameter(const SlaveDescription_t &slaveDescription) {
+    inline std::string supportedTCPPortsParameter(const SlaveDescription_t &slaveDescription) {
         if (slaveDescription.TransportProtocols.TCP_IPv4.get() != nullptr) {
             return supportedEthernetPorts(slaveDescription.TransportProtocols.TCP_IPv4,
                                           slaveDescription.TransportProtocols.TCP_IPv4->DAT_parameter,
@@ -431,7 +431,7 @@ namespace slavedescription {
         return "";
     }
 
-    inline const bool logCategoryExists(const SlaveDescription_t &slaveDescription, uint8_t logCategory) {
+    inline bool logCategoryExists(const SlaveDescription_t &slaveDescription, uint8_t logCategory) {
         if (slaveDescription.Log.get() != nullptr) {
             for (const auto &logCat : slaveDescription.Log->categories) {
                 if (logCat.id == logCategory) {

@@ -46,17 +46,17 @@ public:
         return payload + 4;
     }
 
-    const void setString(std::string& str){
+    void setString(std::string& str){
         assert(str.size() < pow(2, 32));
         *((uint32_t*) payload) = str.size();
         strcpy(payload + 4, str.c_str());
     }
 
-    const std::string getString() const {
+    std::string getString() const {
         return std::string(payload + 4, getSize());
     }
 
-    const uint32_t getSize() const{
+    uint32_t getSize() const{
         return *((uint16_t*) payload);
     }
 
