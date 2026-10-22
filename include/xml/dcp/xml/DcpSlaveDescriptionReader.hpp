@@ -57,11 +57,10 @@ inline std::vector<uint8_t> split(std::string &str) {
     uint16_t temp;
     auto max = std::numeric_limits<uint8_t>::max();
     while (ss >> temp) {
-        uint8_t num = std::min(temp, (uint16_t)max);
         if (temp > max) {
             throw std::overflow_error("Read value is greater than uint8 maximum.");
         }
-        array.push_back(num);
+        array.push_back(static_cast<uint8_t>(temp));
     }
     return array;
 }
@@ -74,14 +73,13 @@ inline std::vector<int8_t> split(std::string &str) {
     auto min = std::numeric_limits<int8_t>::min();
     int16_t temp;
     while (ss >> temp) {
-        int8_t num = std::max(std::min(temp, (int16_t)max), (int16_t)min);
         if (temp > max) {
             throw std::overflow_error("Read value is greater than int8 maximum.");
         }
         else if (temp < min) {
             throw std::underflow_error("Read value is less than int8 minimum.");
         }
-        array.push_back(static_cast<int8_t>(num));
+        array.push_back(static_cast<int8_t>(temp));
     }
     return array;
 }
