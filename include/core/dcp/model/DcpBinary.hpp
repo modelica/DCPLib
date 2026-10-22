@@ -55,12 +55,12 @@ public:
         return payload + 4;
     }
 
-    const void setBinary(uint32_t length, const uint8_t* binary){
+    void setBinary(uint32_t length, uint8_t* binary){
         *((uint32_t*) payload) = length;
         std::copy(binary, binary + length, payload+4);
     }
 
-    const uint32_t getSize() const{
+    uint32_t getSize() const{
         return *((uint16_t*) payload);
     }
 

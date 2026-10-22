@@ -197,7 +197,7 @@ public:
         return payload;
     }
 
-    const size_t serializedSize() const {
+    size_t serializedSize() const {
         return size;
     }
 

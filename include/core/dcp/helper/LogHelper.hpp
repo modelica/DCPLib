@@ -132,7 +132,7 @@ namespace DcpLogHelper {
 
     template<>
     inline size_t applyField(uint8_t *payload, const std::string val) {
-        *((uint16_t *) payload) = val.length();
+        *((uint16_t *) payload) = static_cast<uint16_t>(val.length());
         std::memcpy(payload + 2, val.c_str(), val.length());
         return val.length() + 2;
     };

@@ -36,7 +36,7 @@ static std::string uncompressFileToTemp(zip* zip, std::string filename){
     zip_stat_init(&stat);
     zip_stat(zip, filename.c_str(), 0, &stat);
 
-    char *contents = new char[stat.size];
+    char *contents = new char[static_cast<size_t>(stat.size)];
 
     zip_file *file = zip_fopen(zip, filename.c_str(), 0);
     if(file == nullptr){
