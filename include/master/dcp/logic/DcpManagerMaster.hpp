@@ -163,8 +163,7 @@ public:
                 break;
             }
             case DcpPduType::RSP_error_ack: {
-                DcpPduRspNack &errorAck = static_cast<DcpPduRspNack &>(msg);
-                DcpPduRspStateAck &stateAck = static_cast<DcpPduRspStateAck &>(msg);
+                DcpPduRspErrorAck &errorAck = static_cast<DcpPduRspErrorAck &>(msg);
                 if (synchronousCallback[DcpCallbackTypes::ERROR_ACK]) {
                     errorAckReceivedListener(errorAck.getSender(),
                                              errorAck.getRespSeqId(), errorAck.getErrorCode());
