@@ -19,7 +19,7 @@
 
 
 #define CAST(T1, T2)\
-    for(int i = 0; i < numberOfAssignments; i++){\
+    for(size_t i = 0; i < numberOfAssignments; i++){\
         *((T1*)(payload + offset)) = *((T2*)(newPayload + (start + otherOffset)));\
         offset += baseSize;\
         otherOffset += otherBaseSize;\
@@ -146,14 +146,14 @@ public:
             case DcpDataType::binary:
             case DcpDataType::string:
                 bool invalidPayload = false;
-                for (int i = 0; i < numberOfAssignments; i++) {
+                for (size_t i = 0; i < numberOfAssignments; i++) {
                         uint32_t& length = *((uint32_t*)(payload + offset));
                         uint32_t& newLength = *((uint32_t*)(newPayload + (start + otherOffset)));
                         if (newLength <= baseSize - 4) {
                             length = newLength;
                         }
                         else {
-                            length = baseSize - 4;
+                            length = static_cast<uint32_t>(baseSize - 4);
                             invalidPayload = true;
                         }
                         std::memcpy(payload + (offset + 4), newPayload + (start + otherOffset + 4), length);
@@ -174,7 +174,7 @@ public:
         switch(dataType){
             case DcpDataType::binary:
             case DcpDataType::string:
-                for (int i = 0; i < numberOfAssignments; i++) {
+                for (size_t i = 0; i < numberOfAssignments; i++) {
                     uint32_t& length = *((uint32_t*)(payload + offset));
                     uint32_t& outLength = *((uint32_t*)(output + (start + otherOffset)));
                     outLength = length;
@@ -184,7 +184,7 @@ public:
                 }
                 break;
             default:
-                for (int i = 0; i < numberOfAssignments; i++) {
+                for (size_t i = 0; i < numberOfAssignments; i++) {
                     std::memcpy(output + (start + otherOffset), payload + otherOffset, baseSize);
                     otherOffset += baseSize;
                 }

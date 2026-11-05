@@ -18,6 +18,9 @@ option(BUILD_ZIP "Build neccessary parts for handling slave zip files" OFF)
 
 
 add_definitions(-DDEBUG)
+if(MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
 
 ##dcplib core
 add_library(Core INTERFACE)
