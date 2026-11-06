@@ -1732,7 +1732,6 @@ protected:
                 case DcpPduType::STC_configure:
                 case DcpPduType::STC_initialize:
                 case DcpPduType::STC_run:
-                case DcpPduType::STC_do_step:
                 case DcpPduType::STC_send_outputs:
                 case DcpPduType::STC_stop:
                 case DcpPduType::STC_reset: {
@@ -1740,6 +1739,19 @@ protected:
                     if (bst.getStateId() != state) {
 #if defined(DEBUG) || defined(LOGGING)
                         Log(INVALID_STATE_ID, bst.getStateId(), state);
+#endif
+                        error = DcpError::INVALID_STATE_ID;
+                    }
+                    break;
+                }
+                case DcpPduType::STC_do_step: {
+                    DcpPduStc &doStepPdu = static_cast<DcpPduStc &>(msg);
+                    const bool synchronizationCompleted = opMode == DcpOpMode::NRT &&
+                                                          state == DcpState::SYNCHRONIZED &&
+                                                          doStepPdu.getStateId() == DcpState::SYNCHRONIZING;
+                    if (doStepPdu.getStateId() != state && !synchronizationCompleted) {
+#if defined(DEBUG) || defined(LOGGING)
+                        Log(INVALID_STATE_ID, doStepPdu.getStateId(), state);
 #endif
                         error = DcpError::INVALID_STATE_ID;
                     }
