@@ -1746,10 +1746,15 @@ protected:
                 }
                 case DcpPduType::STC_do_step: {
                     DcpPduStc &doStepPdu = static_cast<DcpPduStc &>(msg);
-                    const bool synchronizationCompleted = opMode == DcpOpMode::NRT &&
-                                                          state == DcpState::SYNCHRONIZED &&
-                                                          doStepPdu.getStateId() == DcpState::SYNCHRONIZING;
-                    if (doStepPdu.getStateId() != state && !synchronizationCompleted) {
+                    const bool stateAdvancedWhilePduWasInFlight =
+                        opMode == DcpOpMode::NRT &&
+                        ((state == DcpState::SYNCHRONIZED &&
+                          doStepPdu.getStateId() == DcpState::SYNCHRONIZING) ||
+                         (state == DcpState::RUNNING &&
+                          (doStepPdu.getStateId() == DcpState::SYNCHRONIZING ||
+                           doStepPdu.getStateId() == DcpState::SYNCHRONIZED)));
+                    if (doStepPdu.getStateId() != state &&
+                        !stateAdvancedWhilePduWasInFlight) {
 #if defined(DEBUG) || defined(LOGGING)
                         Log(INVALID_STATE_ID, doStepPdu.getStateId(), state);
 #endif
