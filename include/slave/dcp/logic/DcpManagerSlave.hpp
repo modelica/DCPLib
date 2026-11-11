@@ -694,7 +694,7 @@ protected:
     virtual void synchronize() override {
         lastExecution++;
         {
-            std::lock_guard<std::mutex> lock(synchronizingStateMutex);
+            std::lock_guard<std::mutex> lock(stateChangeMutex);
             synchronizingFinishedDuringStep = false;
         }
         if (synchronizing != NULL) {
@@ -725,7 +725,7 @@ protected:
         bool state_changed = false;
         bool interrupted = false;
         {
-            std::lock_guard<std::mutex> lock(synchronizingStateMutex);
+            std::lock_guard<std::mutex> lock(stateChangeMutex);
             if (state == DcpState::SYNCHRONIZING) {
                 state = DcpState::SYNCHRONIZED;
                 realtimeState = DcpState::SYNCHRONIZED;
@@ -1044,8 +1044,7 @@ protected:
 #endif
     }
 
-    virtual void notifyStateChangedListener() override {
-        const DcpState current_state = state.load();
+    virtual void notifyStateChangedListener(DcpState current_state) override {
         if (asynchronousCallback[DcpCallbackTypes::STATE_CHANGED]) {
             std::thread t(stateChangedListener, current_state);
             t.detach();

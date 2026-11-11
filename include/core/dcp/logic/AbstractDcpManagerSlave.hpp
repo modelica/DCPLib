@@ -159,7 +159,7 @@ public:
             }
             case DcpPduType::STC_do_step: {
                 {
-                    std::lock_guard<std::mutex> lock(synchronizingStateMutex);
+                    std::lock_guard<std::mutex> lock(stateChangeMutex);
                     runLastExitPoint = state;
                     state = DcpState::COMPUTING;
                 }
@@ -296,13 +296,13 @@ public:
                     state = DcpState::CONFIGURED;
                 } else if (state == DcpState::COMPUTED) {
                     {
-                        std::lock_guard<std::mutex> lock(synchronizingStateMutex);
+                        std::lock_guard<std::mutex> lock(stateChangeMutex);
                         state = DcpState::SENDING_D;
                     }
                     notifyStateChange();
                     sendOutputs(runningScope);
                     {
-                        std::lock_guard<std::mutex> lock(synchronizingStateMutex);
+                        std::lock_guard<std::mutex> lock(stateChangeMutex);
                         state = runLastExitPoint;
                         if (synchronizingFinishedDuringStep) {
                             if (state == DcpState::SYNCHRONIZING) {
@@ -623,7 +623,7 @@ protected:
     DcpState runLastExitPoint;
     DcpError errorCode;
 
-    std::mutex synchronizingStateMutex;
+    std::mutex stateChangeMutex;
     bool synchronizingFinishedDuringStep = false;
 
     // Acu-D constants
@@ -1437,12 +1437,17 @@ protected:
     }
 
     void notifyStateChange() {
-        DcpPduNtfStateChanged notification = {dcpId, state};
-        driver.send(notification);
+        DcpState current_state;
+        {
+            std::lock_guard<std::mutex> lock(stateChangeMutex);
+            current_state = state.load();
+            DcpPduNtfStateChanged notification = {dcpId, current_state};
+            driver.send(notification);
 #ifdef DEBUG
-        Log(STATE_CHANGED, state.load());
+            Log(STATE_CHANGED, current_state);
 #endif
-        notifyStateChangedListener();
+        }
+        notifyStateChangedListener(current_state);
     }
 
     void setTimeRes(uint32_t numerator,
@@ -2555,7 +2560,7 @@ case DcpDataType::input: \
 
 #endif
 
-    virtual void notifyStateChangedListener() = 0;
+    virtual void notifyStateChangedListener(DcpState state) = 0;
 
     virtual void notifyTimeResListener() = 0;
 
