@@ -693,6 +693,10 @@ protected:
 
     virtual void synchronize() override {
         lastExecution++;
+        {
+            std::lock_guard<std::mutex> lock(synchronizingStateMutex);
+            synchronizingFinishedDuringStep = false;
+        }
         if (synchronizing != NULL) {
             synchronizing->detach();
             delete synchronizing;
@@ -718,11 +722,24 @@ protected:
 #ifdef DEBUG
         Log(SYNCHRONIZING_FINISHED);
 #endif
-        if (state == DcpState::SYNCHRONIZING) {
-            state = DcpState::SYNCHRONIZED;
-            realtimeState = DcpState::SYNCHRONIZED;
+        bool state_changed = false;
+        bool interrupted = false;
+        {
+            std::lock_guard<std::mutex> lock(synchronizingStateMutex);
+            if (state == DcpState::SYNCHRONIZING) {
+                state = DcpState::SYNCHRONIZED;
+                realtimeState = DcpState::SYNCHRONIZED;
+                state_changed = true;
+            } else if (state == DcpState::COMPUTING || state == DcpState::COMPUTED ||
+                       state == DcpState::SENDING_D) {
+                synchronizingFinishedDuringStep = true;
+            } else {
+                interrupted = true;
+            }
+        }
+        if (state_changed) {
             notifyStateChange();
-        } else {
+        } else if (interrupted) {
 #ifdef DEBUG
             Log(SYNCHRONIZING_INTERRUPTED);
 #endif
@@ -1028,11 +1045,12 @@ protected:
     }
 
     virtual void notifyStateChangedListener() override {
+        const DcpState current_state = state.load();
         if (asynchronousCallback[DcpCallbackTypes::STATE_CHANGED]) {
-            std::thread t(stateChangedListener, state);
+            std::thread t(stateChangedListener, current_state);
             t.detach();
         } else {
-            stateChangedListener(state);
+            stateChangedListener(current_state);
         }
     }
 

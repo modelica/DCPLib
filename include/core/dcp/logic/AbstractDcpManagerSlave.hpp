@@ -11,7 +11,9 @@
 #define ACI_LOGIC_DRIVERMANAGERSLAVE_H_
 
 
+#include <atomic>
 #include <map>
+#include <mutex>
 #include <vector>
 #include <set>
 #include <iterator>
@@ -156,8 +158,11 @@ public:
                 break;
             }
             case DcpPduType::STC_do_step: {
-                runLastExitPoint = state;
-                state = DcpState::COMPUTING;
+                {
+                    std::lock_guard<std::mutex> lock(synchronizingStateMutex);
+                    runLastExitPoint = state;
+                    state = DcpState::COMPUTING;
+                }
                 notifyStateChange();
                 DcpPduStcDoStep &doStepPdu = static_cast<DcpPduStcDoStep &>(msg);
                 doStep(doStepPdu.getSteps());
@@ -290,10 +295,23 @@ public:
                     sendOutputs(initializationScope);
                     state = DcpState::CONFIGURED;
                 } else if (state == DcpState::COMPUTED) {
-                    state = DcpState::SENDING_D;
+                    {
+                        std::lock_guard<std::mutex> lock(synchronizingStateMutex);
+                        state = DcpState::SENDING_D;
+                    }
                     notifyStateChange();
                     sendOutputs(runningScope);
-                    state = runLastExitPoint;
+                    {
+                        std::lock_guard<std::mutex> lock(synchronizingStateMutex);
+                        state = runLastExitPoint;
+                        if (synchronizingFinishedDuringStep) {
+                            if (state == DcpState::SYNCHRONIZING) {
+                                state = DcpState::SYNCHRONIZED;
+                                realtimeState = DcpState::SYNCHRONIZED;
+                            }
+                            synchronizingFinishedDuringStep = false;
+                        }
+                    }
                 }
                 notifyStateChange();
                 break;
@@ -600,10 +618,13 @@ protected:
 
     uint16_t seqAtRegister;
 
-    DcpState state;
+    std::atomic<DcpState> state;
     DcpState realtimeState;
     DcpState runLastExitPoint;
     DcpError errorCode;
+
+    std::mutex synchronizingStateMutex;
+    bool synchronizingFinishedDuringStep = false;
 
     // Acu-D constants
     DcpOpMode opMode;
@@ -1419,7 +1440,7 @@ protected:
         DcpPduNtfStateChanged notification = {dcpId, state};
         driver.send(notification);
 #ifdef DEBUG
-        Log(STATE_CHANGED, state);
+        Log(STATE_CHANGED, state.load());
 #endif
         notifyStateChangedListener();
     }
@@ -1689,7 +1710,7 @@ protected:
                 case DcpPduType::DAT_parameter: {
                     if (!stateChangePossible[state][msg.getTypeId()]) {
 #if defined(DEBUG) || defined(LOGGING)
-                        Log(DATA_NOT_ALLOWED, state);
+                        Log(DATA_NOT_ALLOWED, state.load());
 #endif
                         return false;
                     } else {
@@ -1700,7 +1721,7 @@ protected:
                 default:
                     if (!stateChangePossible[state][msg.getTypeId()]) {
 #if defined(DEBUG) || defined(LOGGING)
-                        Log(MSG_NOT_ALLOWED, msg.getTypeId(), state);
+                        Log(MSG_NOT_ALLOWED, msg.getTypeId(), state.load());
 #endif
                         error = DcpError::PROTOCOL_ERROR_PDU_NOT_ALLOWED_IN_THIS_STATE;
                     }
@@ -1717,7 +1738,7 @@ protected:
                     DcpPduStcRegister registerPdu = static_cast<DcpPduStcRegister &>(msg);
                     if (registerPdu.getStateId() != state) {
 #if defined(DEBUG) || defined(LOGGING)
-                        Log(INVALID_STATE_ID, registerPdu.getStateId(), state);
+                        Log(INVALID_STATE_ID, registerPdu.getStateId(), state.load());
 #endif
                         const uint16_t exp_seq_id = registerPdu.getPduSeqId() + 1;
                         DcpPduRspNack nack = {DcpPduType::RSP_nack, registerPdu.getReceiver(), registerPdu.getPduSeqId(),
@@ -1738,7 +1759,7 @@ protected:
                     DcpPduStc &bst = static_cast<DcpPduStc &>(msg);
                     if (bst.getStateId() != state) {
 #if defined(DEBUG) || defined(LOGGING)
-                        Log(INVALID_STATE_ID, bst.getStateId(), state);
+                        Log(INVALID_STATE_ID, bst.getStateId(), state.load());
 #endif
                         error = DcpError::INVALID_STATE_ID;
                     }
@@ -1751,7 +1772,7 @@ protected:
                                                           doStepPdu.getStateId() == DcpState::SYNCHRONIZING;
                     if (doStepPdu.getStateId() != state && !synchronizationCompleted) {
 #if defined(DEBUG) || defined(LOGGING)
-                        Log(INVALID_STATE_ID, doStepPdu.getStateId(), state);
+                        Log(INVALID_STATE_ID, doStepPdu.getStateId(), state.load());
 #endif
                         error = DcpError::INVALID_STATE_ID;
                     }
